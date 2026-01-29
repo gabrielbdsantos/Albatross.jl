@@ -1,0 +1,7 @@
+name = "Albatross"
+uuid = "3ca8fdff-dd54-46a1-887c-183655a5fc91"
+authors = ["Gabriel B. Santos <gabriel.bertacco@unesp.br>"]
+version = "0.0.1"
+
+[compat]
+julia = "1.10"
