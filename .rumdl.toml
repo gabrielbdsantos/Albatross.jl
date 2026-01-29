@@ -1,0 +1,56 @@
+# rumdl configuration file
+
+# Global configuration options
+[global]
+# List of rules to disable (uncomment and modify as needed)
+disable = [
+  "MD041", # first line heading level 1
+]
+
+# List of rules to enable exclusively (if provided, only these rules will run)
+# enable = ["MD001", "MD003", "MD004"]
+
+# List of file/directory patterns to include for linting (if provided, only these will be linted)
+# include = [
+#    "docs/*.md",
+#    "src/**/*.md",
+#    "README.md"
+# ]
+
+# List of file/directory patterns to exclude from linting
+exclude = [
+    # Common directories to exclude
+    ".git",
+    ".github",
+    "docs/build",
+
+    # Specific files or patterns
+    "CHANGELOG.md",
+    "LICENSE",
+]
+
+# Respect .gitignore files when scanning directories (default: true)
+respect-gitignore = true
+
+# Options: standard (default), gfm, commonmark, mkdocs, mdx, quarto
+flavor = "standard"
+
+# Heading style
+[MD003]
+style = "atx"
+
+# Unordered list style
+[MD004]
+style = "dash" # (asterisk, plus, dash, consistent)
+
+# Unordered list indentation
+[MD007]
+indent = 2
+# start-indented = true
+# start-indent = 2
+# style = "fixed"
+
+# Line length
+[MD013]
+line-length = 79
+reflow = true
