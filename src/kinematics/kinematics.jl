@@ -37,8 +37,10 @@ Prescribed constant rotor angular velocity.
 
 - `ω`: Constant angular velocity (rad/s).
 """
-@kwdef @concrete struct ConstantAngularVelocity <: AbstractRotorKinematics
+@concrete struct ConstantAngularVelocity <: AbstractRotorKinematics
     ω
 end
+
+ConstantAngularVelocity(; ω) = ConstantAngularVelocity(ω)
 
 angular_velocity(m::ConstantAngularVelocity, _) = m.ω
