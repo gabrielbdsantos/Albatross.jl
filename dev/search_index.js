@@ -1,3 +1,3 @@
 var documenterSearchIndex = {"docs":
-[{"location":"#Albatross","page":"Home","title":"Albatross","text":"Documentation for Albatross.\n\n","category":"section"}]
+[{"location":"#Albatross.jl","page":"Home","title":"Albatross.jl","text":"Albatross is a Julia software for reduced-order analysis of vertical-axis wind turbines.\n\nwarning: WARNING\nThis project is under active development. Breaking changes may occur at any time, and backward compatibility is not guaranteed until a stable release.","category":"section"},{"location":"#Quick-Install","page":"Home","title":"Quick Install","text":"Albatross is not yet a registered Julia package. To install it,\n\nDownload Julia version 1.10 or later.\nLaunch Julia and type\nimport Pkg\nPkg.add(\"https://github.com/gabrielbdsantos/Albatross.jl.git\")","category":"section"}]
 }
