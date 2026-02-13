@@ -1,0 +1,38 @@
+"""
+    UniformBladeHDarrieus <: AbstractDarrieusTurbine
+
+H-Darrieus vertical-axis wind turbine model with identical blades.
+
+This turbine model represents a straight-bladed (H-type) Darrieus rotor in
+which all blades share the same blade geometry and section layout. The blade
+geometry is replicated `num_blades` times and distributed uniformly in azimuth.
+
+Rotor motion is prescribed through a rotor-kinematics model and is independent
+of aerodynamic loading.
+
+# Fields
+
+- `blade`: Blade geometry model describing the spanwise layout and section
+  geometry of a single blade.
+- `kinematics`: Rotor kinematics model prescribing the angular motion of the
+  rotor.
+- `num_blades`: Number of blades in the rotor.
+"""
+@concrete struct UniformBladeHDarrieus <: AbstractDarrieusTurbine
+    blade <: AbstractBladeGeometry
+    kinematics <: AbstractRotorKinematics
+    num_blades
+end
+
+function UniformBladeHDarrieus(
+    ; blade::T_blade, kinematics::T_kinematics, num_blades
+) where {T_blade <: AbstractBladeGeometry, T_kinematics <: AbstractRotorKinematics}
+    return UniformBladeHDarrieus(blade, kinematics, num_blades)
+end
+
+num_blades(t::UniformBladeHDarrieus) = t.num_blades
+kinematics(t::UniformBladeHDarrieus) = t.kinematics
+
+# UniformBladeHDarrieus assumes identical blades, so this returns a single
+# representative blade geometry.
+blades(t::UniformBladeHDarrieus) = t.blade
