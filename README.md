@@ -19,7 +19,7 @@
 
 Albatross is not yet a registered Julia package. So to install it,
 
-1. Download [Julia](https://julialang.org/downloads/) version 1.10 or later.
+1. Download [Julia](https://julialang.org/downloads/) version 1.11 or later.
 1. Launch Julia and type
 
    ```julia-repl
