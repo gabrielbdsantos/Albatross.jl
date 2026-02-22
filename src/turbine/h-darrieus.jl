@@ -24,15 +24,20 @@ of aerodynamic loading.
     num_blades
 end
 
-function UniformBladeHDarrieus(
-    ; blade::T_blade, kinematics::T_kinematics, num_blades
-) where {T_blade <: AbstractBladeGeometry, T_kinematics <: AbstractRotorKinematics}
+function UniformBladeHDarrieus(;
+        blade::B,
+        kinematics::K,
+        num_blades
+    ) where {
+        B <: AbstractBladeGeometry,
+        K <: AbstractRotorKinematics,
+    }
     return UniformBladeHDarrieus(blade, kinematics, num_blades)
 end
 
 num_blades(t::UniformBladeHDarrieus) = t.num_blades
 kinematics(t::UniformBladeHDarrieus) = t.kinematics
 
-# UniformBladeHDarrieus assumes identical blades, so this returns a single
-# representative blade geometry.
+# NOTE: UniformBladeHDarrieus assumes identical blades, so this returns a
+# single representative blade geometry.
 blades(t::UniformBladeHDarrieus) = t.blade

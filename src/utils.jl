@@ -1,7 +1,7 @@
 """
     @define_cat_methods T
 
-Define `Base.cat`, `Base.vcat`, and `Base.hcat` methods for a type `T`.
+Define `Base.cat`, `Base.vcat`, and `Base.hcat` methods for type `T`.
 """
 macro define_cat_methods(T)
     Tesc = esc(T)

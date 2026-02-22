@@ -101,7 +101,7 @@ entire span.
     height
 end
 
-UniformStraightBlade(; section::T_section, height) where {T_section <: AbstractBladeSection} =
+UniformStraightBlade(; section::T, height) where {T <: AbstractBladeSection} =
     UniformStraightBlade(section, height)
 
 section(b::UniformStraightBlade, _) = b.section

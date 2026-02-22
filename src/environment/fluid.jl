@@ -1,7 +1,7 @@
 # Thermophysical properties of air at standard conditions.
-const __ρ_air = 1.225
-const __μ_air = 1.5e-5
-const __c_air = 343.0
+const ρ_air = 1.225
+const μ_air = 1.5e-5
+const c_air = 343.0
 
 """
     AbstractFluid
@@ -62,7 +62,7 @@ infinite.
     μ
 end
 
-IncompressibleFluid(; ρ = __ρ_air, μ = __μ_air) = IncompressibleFluid(ρ, μ)
+IncompressibleFluid(; ρ = ρ_air, μ = μ_air) = IncompressibleFluid(ρ, μ)
 
 density(x::IncompressibleFluid) = x.ρ
 viscosity(x::IncompressibleFluid) = x.μ
@@ -93,8 +93,7 @@ retaining spatially uniform properties.
     c
 end
 
-ConstantPropertyFluid(; ρ = __ρ_air, μ = __μ_air, c = __c_air) =
-    ConstantPropertyFluid(ρ, μ, c)
+ConstantPropertyFluid(; ρ = ρ_air, μ = μ_air, c = c_air) = ConstantPropertyFluid(ρ, μ, c)
 
 density(x::ConstantPropertyFluid) = x.ρ
 viscosity(x::ConstantPropertyFluid) = x.μ

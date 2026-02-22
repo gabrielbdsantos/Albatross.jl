@@ -34,8 +34,8 @@ half-rotations.
     discretization <: AbstractDMSTDiscretization
 end
 
-function DMST(
-        ; turbine::T_turbine,
+function DMST(;
+        turbine::T_turbine,
         environment::T_environment,
         momentum::T_momentum,
         aerodynamics::T_aerodynamics,
@@ -51,14 +51,13 @@ function DMST(
 end
 
 """
-    solve(dmst::DMST) -> DMSTOutput
+    solve(dmst::DMST)
 
-Run the DMST solver
+Run the DMST solver.
+
 The solution is obtained by solving, independently for each azimuthal point,
-a nonlinear balance between:
-
-- the thrust/drag relation implied by the momentum model, and
-- the thrust coefficient computed from the aerodynamic streamtube evaluation.
+a nonlinear balance between the thrust predicted by the momentum model and
+the thrust coefficient computed from the aerodynamic streamtube evaluation.
 
 # Arguments
 
@@ -165,6 +164,7 @@ function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
     # and even k = 4.
     k = 1
 
+    # Local induced velocity (Equation 1).
     U_a = @. U_in * (1 - a)
 
     # Relative velocity experienced by the blade (Equation 8) and angle of

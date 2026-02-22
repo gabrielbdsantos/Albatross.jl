@@ -101,8 +101,8 @@ of airfoil shape, angle of attack, and Reynolds number.
 # Notes
 
 Angles are provided to the backend in degrees. `Mach` is currently not used by
-this model, and `use_deep_stall` is currently not applied in backend evaluation.
-Both are retained for future extensions.
+this model, and `use_deep_stall` is currently not applied in backend
+evaluation. Both are retained for future extensions.
 """
 @concrete struct NeuralSectionAerodynamics <: AbstractSectionAerodynamics
     network_parameters <: NNFoil.NeuralNetworkParameters

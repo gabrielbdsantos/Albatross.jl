@@ -6,6 +6,13 @@ Abstract supertype for wind turbine system models.
 A subtype of `AbstractTurbine` represents the geometric and structural
 configuration of a wind turbine (rotor geometry, blade geometry, and
 kinematics).
+
+# Interface methods
+
+- [`num_blades`](@ref)
+- [`kinematics`](@ref)
+- [`blades`](@ref)
+- [`swept_area`](@ref)
 """
 abstract type AbstractTurbine end
 
@@ -31,9 +38,10 @@ Return the number of blades in the turbine rotor.
 function num_blades end
 
 """
-    kinematics(turbine::AbstractTurbine) -> AbstractRotorKinematics
+    kinematics(turbine::AbstractTurbine)
 
-Return the rotor kinematics model associated with the turbine.
+Return the rotor kinematics model (a subtype of
+[`AbstractRotorKinematics`](@ref)) associated with the turbine.
 """
 function kinematics end
 

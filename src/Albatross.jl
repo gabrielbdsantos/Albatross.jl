@@ -35,25 +35,43 @@ include("solvers/dmst/solver.jl")
 
 export
     # Momentum
-    AbstractMomentumTheory, RankineFroude, SteirosHultmark,
+    AbstractMomentumTheory,
+    RankineFroude,
+    SteirosHultmark,
+
     # Environment
-    AbstractFluid, ConstantPropertyFluid,
-    AbstractInflow, UniformInflow,
+    AbstractFluid,
+    ConstantPropertyFluid,
+    AbstractInflow,
+    UniformInflow,
     EnvironmentConditions,
+
     # Kinematics
-    AbstractRotorKinematics, ConstantAngularVelocity,
+    AbstractRotorKinematics,
+    ConstantAngularVelocity,
+
     # Geometry
-    AbstractBladeSection, BladeSection,
-    AbstractBladeGeometry, UniformStraightBlade,
+    AbstractBladeSection,
+    BladeSection,
+    AbstractBladeGeometry,
+    UniformStraightBlade,
+
     # Turbine
     AbstractTurbine,
-    AbstractDarrieusTurbine, UniformBladeHDarrieus,
+    AbstractDarrieusTurbine,
+    UniformBladeHDarrieus,
+
     # Aerodynamics
-    LocalFlowState, AerodynamicCoefficients,
-    AbstractSectionAerodynamics, NeuralSectionAerodynamics,
+    LocalFlowState,
+    AerodynamicCoefficients,
+    AbstractSectionAerodynamics,
+    NeuralSectionAerodynamics,
+
     # Solvers
-    AbstractSolver, solve,
-    AbstractDMSTDiscretization, UniformAzimuth,
+    AbstractSolver,
+    solve,
+    AbstractDMSTDiscretization,
+    UniformAzimuth,
     DMST
 
 end
