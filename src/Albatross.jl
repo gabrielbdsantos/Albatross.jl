@@ -8,6 +8,8 @@ using ConcreteStructs: @concrete
 using NNFoil: NNFoil
 using NonlinearSolve: NonlinearSolve
 
+include("utils.jl")
+
 include("momentum/momentum.jl")
 include("momentum/rankine_froude.jl")
 include("momentum/steiros_hultmark.jl")

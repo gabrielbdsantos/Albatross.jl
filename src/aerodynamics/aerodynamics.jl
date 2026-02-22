@@ -19,6 +19,10 @@ aerodynamics at a given blade section ([`AbstractBladeSection`](@ref)).
     Mach
 end
 
+LocalFlowState(; alpha, Re, Mach) = LocalFlowState(alpha, Re, Mach)
+
+@define_cat_methods LocalFlowState
+
 """
     AerodynamicCoefficients
 
@@ -42,6 +46,10 @@ computed separately using the local kinematics and angle of attack.
     Cd
     Cm
 end
+
+AerodynamicCoefficients(; Cl, Cd, Cm) = AerodynamicCoefficients(Cl, Cd, Cm)
+
+@define_cat_methods AerodynamicCoefficients
 
 """
     AbstractSectionAerodynamics

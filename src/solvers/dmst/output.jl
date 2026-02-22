@@ -32,11 +32,4 @@ function DMSTOutput(; a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Cq, Q, Cth, C
     return DMSTOutput(a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Cq, Q, Cth, Cp)
 end
 
-Base.cat(a::DMSTOutput, b::DMSTOutput; kwargs...) = DMSTOutput(;
-    (
-        f => cat(getfield(a, f), getfield(b, f); kwargs...)
-            for f in fieldnames(DMSTOutput)
-    )...
-)
-Base.vcat(out1::DMSTOutput, out2::DMSTOutput) = cat(out1, out2; dims = 1)
-Base.hcat(out1::DMSTOutput, out2::DMSTOutput) = cat(out1, out2; dims = 2)
+@define_cat_methods DMSTOutput
