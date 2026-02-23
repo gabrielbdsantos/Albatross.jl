@@ -41,3 +41,12 @@ kinematics(t::UniformBladeHDarrieus) = t.kinematics
 # NOTE: UniformBladeHDarrieus assumes identical blades, so this returns a
 # single representative blade geometry.
 blades(t::UniformBladeHDarrieus) = t.blade
+
+function swept_area(t::UniformBladeHDarrieus)
+    z = nothing
+    blade = blades(t)
+    H = height(blade)
+    R = radial_pos(section(blade, z))
+
+    return H * 2R
+end

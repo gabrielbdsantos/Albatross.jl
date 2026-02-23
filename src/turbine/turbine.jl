@@ -61,3 +61,10 @@ When a single geometry is returned, [`num_blades(turbine)`](@ref) defines how
 many identical blades are represented by that geometry.
 """
 function blades end
+
+"""
+    swept_area(turbine::AbstractTurbine)
+
+Return the swept area of `turbine`.
+"""
+function swept_area end
