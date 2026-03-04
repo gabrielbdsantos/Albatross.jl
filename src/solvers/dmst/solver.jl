@@ -1,56 +1,4 @@
 """
-    DMST <: AbstractSolver
-
-Double-Multiple Streamtube (DMST) solver for Darrieus-type VAWTs.
-
-`DMST` combines a turbine model, environmental conditions, a momentum/induction
-model, a section aerodynamics model, and an azimuthal discretization method to
-compute local loads and performance quantities over the upstream and downstream
-half-rotations.
-
-# Fields
-
-- `turbine<:AbstractDarrieusTurbine`: Darrieus turbine model to be solved.
-- `environment<:EnvironmentConditions`: Ambient/environmental conditions (fluid
-  and inflow).
-- `momentum<:AbstractMomentumTheory`: Momentum/induction submodel used to
-  relate induction to thrust.
-- `aerodynamics<:AbstractSectionAerodynamics`: Section aerodynamics model
-  returning airfoil coefficients.
-- `discretization<:AbstractDMSTDiscretization`: DMST azimuthal discretization
-  (azimuth points and weights).
-
-!!! note "Current limitations"
-
-    The current `solve(::DMST)` implementation assumes a simplified
-    turbine/blade representation and will be generalized as the geometry
-    interfaces mature.
-"""
-@concrete struct DMST <: AbstractSolver
-    turbine <: AbstractDarrieusTurbine
-    environment <: EnvironmentConditions
-    momentum <: AbstractMomentumTheory
-    aerodynamics <: AbstractSectionAerodynamics
-    discretization <: AbstractDMSTDiscretization
-end
-
-function DMST(;
-        turbine::T_turbine,
-        environment::T_environment,
-        momentum::T_momentum,
-        aerodynamics::T_aerodynamics,
-        discretization::T_discretization,
-    ) where {
-        T_turbine <: AbstractDarrieusTurbine,
-        T_environment <: EnvironmentConditions,
-        T_momentum <: AbstractMomentumTheory,
-        T_aerodynamics <: AbstractSectionAerodynamics,
-        T_discretization <: AbstractDMSTDiscretization,
-    }
-    return DMST(turbine, environment, momentum, aerodynamics, discretization)
-end
-
-"""
     solve(dmst::DMST)
 
 Run the DMST solver.
@@ -75,13 +23,12 @@ the thrust coefficient computed from the aerodynamic streamtube evaluation.
 """
 function solve(dmst::DMST)
     U_inf = velocity(dmst.environment.inflow)
-    u0 = zeros(num_azimuths(dmst.discretization))
 
     function s_up(u)
         return streamtube(
             u,
-            upstream_azimuths(dmst.discretization),
-            upstream_deltas(dmst.discretization),
+            points(dmst.grid.azimuthal.upstream),
+            weights(dmst.grid.azimuthal.upstream),
             U_inf,
             dmst.turbine,
             dmst.environment,
@@ -94,6 +41,7 @@ function solve(dmst::DMST)
         return nothing
     end
 
+    u0 = zeros(length(dmst.grid.azimuthal.upstream))
     sol_up = NonlinearSolve.solve(
         NonlinearSolve.NonlinearProblem{true}(f_up, u0),
         NonlinearSolve.SimpleNewtonRaphson()
@@ -103,8 +51,8 @@ function solve(dmst::DMST)
     function s_down(u)
         return streamtube(
             u,
-            downstream_azimuths(dmst.discretization),
-            downstream_deltas(dmst.discretization),
+            points(dmst.grid.azimuthal.downstream),
+            weights(dmst.grid.azimuthal.downstream),
             U_wake,
             dmst.turbine,
             dmst.environment,
@@ -117,6 +65,7 @@ function solve(dmst::DMST)
         return nothing
     end
 
+    u0 = zeros(length(dmst.grid.azimuthal.downstream))
     sol_down = NonlinearSolve.solve(
         NonlinearSolve.NonlinearProblem{true}(f_down, u0),
         NonlinearSolve.SimpleNewtonRaphson()
@@ -156,12 +105,15 @@ function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
     blade = blades(turbine)
     c = chord(blade, z)
     R = radial_pos(blade, z)
-    H = height(blade)
+    H = span(blade)
     U_inf = velocity(ambient.inflow)
+    ρ = density(ambient.fluid)
+    μ = viscosity(ambient.fluid)
+    c_sound = speed_of_sound(ambient.fluid)
 
-    # Mysterious coefficient. According to Ayati et. al. [1], this coefficient
-    # assumes different values across the literature. Some studies adopt k = 2
-    # and even k = 4.
+    # This is a mysterious coefficient. According to Ayati et. al. [1], this
+    # coefficient assumes different values across the literature. Some studies
+    # adopt k = 2 or even k = 4.
     k = 1
 
     # Local induced velocity (Equation 1).
@@ -172,9 +124,6 @@ function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
     U_r, aoa = local_flow_conditions(θ, U_a, ω, R)
 
     # Local Reynolds and Mach numbers.
-    ρ = density(ambient.fluid)
-    μ = viscosity(ambient.fluid)
-    c_sound = speed_of_sound(ambient.fluid)
     Re = @. ρ * U_r * c / μ
     Ma = @. U_r / c_sound
 
@@ -188,7 +137,7 @@ function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
     Cl = aero_coeffs.Cl
     Cd = aero_coeffs.Cd
 
-    # Tangential and normal force coefficients (Equation 9 and 10).
+    # Tangential and normal force coefficients (Equations 9 and 10).
     Ct = @. Cl * sin(aoa) - Cd * cos(aoa)
     Cn = @. Cl * cos(aoa) + Cd * sin(aoa)
 
@@ -206,7 +155,7 @@ function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
     Cth = @. k * num_blades(turbine) / 2pi * (Δθ * Th) / q_streamtube
 
     # Instantaneous power coefficient (Equation 14).
-    A_turbine = H * (2 * R)
+    A_turbine = H * 2R
     q_inf = @. (1 / 2) * ρ * A_turbine * U_inf^3
     Cp = @. k * (num_blades(turbine) / 2pi) * (Δθ * Q * ω) / q_inf
 

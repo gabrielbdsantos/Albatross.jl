@@ -24,28 +24,23 @@ of aerodynamic loading.
     num_blades
 end
 
-function UniformBladeHDarrieus(;
-        blade::B,
-        kinematics::K,
-        num_blades
-    ) where {
-        B <: AbstractBladeGeometry,
-        K <: AbstractRotorKinematics,
-    }
-    return UniformBladeHDarrieus(blade, kinematics, num_blades)
-end
+UniformBladeHDarrieus(;
+    blade::AbstractBladeGeometry,
+    kinematics::AbstractRotorKinematics,
+    num_blades
+) = UniformBladeHDarrieus(blade, kinematics, num_blades)
 
 num_blades(t::UniformBladeHDarrieus) = t.num_blades
 kinematics(t::UniformBladeHDarrieus) = t.kinematics
 
 # NOTE: UniformBladeHDarrieus assumes identical blades, so this returns a
-# single representative blade geometry.
+# single representative blade geometry for now.
 blades(t::UniformBladeHDarrieus) = t.blade
 
 function swept_area(t::UniformBladeHDarrieus)
     z = nothing
     blade = blades(t)
-    H = height(blade)
+    H = span(blade)
     R = radial_pos(section(blade, z))
 
     return H * 2R

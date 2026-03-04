@@ -1,6 +1,6 @@
 using Albatross
 using AirfoilDefinitions
-using Albatross.NNFoil: KulfanParameters
+using NNFoil: KulfanParameters
 
 environment = EnvironmentConditions(
     ConstantPropertyFluid(),
@@ -20,7 +20,7 @@ aerodynamics = NeuralSectionAerodynamics(; model_size = :xsmall)
 
 blade = UniformStraightBlade(
     section = blade_section,
-    height = 2.0
+    span = 2.0
 )
 
 kinematics = ConstantAngularVelocity(20.0)
@@ -33,10 +33,11 @@ turbine = UniformBladeHDarrieus(
 
 momentum = RankineFroude()
 
-discretization = UniformAzimuth(36)
-
-dmst = DMST(
-    turbine, environment, momentum, aerodynamics, discretization
+grid = DMSTGrid(
+    azimuthal = UniformAzimuthalGrid(36),
+    spanwise = UniformSpanwiseGrid(turbine, 1)
 )
+
+dmst = DMST(turbine, environment, momentum, aerodynamics, grid)
 
 solution = solve(dmst)

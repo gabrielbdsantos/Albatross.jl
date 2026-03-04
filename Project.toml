@@ -5,15 +5,17 @@ version = "0.0.1-alpha"
 
 [deps]
 ConcreteStructs = "2569d6c7-a4a2-43d3-a901-331e8e4be471"
+FillArrays = "1a297f60-69ca-5386-bcde-b61e274b549b"
 NNFoil = "5d96e3f7-5e7b-44ae-828e-526bf7f0e78d"
 NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
+
+[sources]
+ConcreteStructs = {rev = "main", url = "https://github.com/gabrielbdsantos/ConcreteStructs.jl"}
+NNFoil = {rev = "main", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}
 
 [compat]
 julia = "1.11"
 ConcreteStructs = "0.2.5"
+FillArrays = "1.16.0"
 NNFoil = "0.1.6"
 NonlinearSolve = "4.15.0"
-
-[sources]
-ConcreteStructs = { url = "https://github.com/gabrielbdsantos/ConcreteStructs.jl", rev = "main" }
-NNFoil = { url = "https://github.com/gabrielbdsantos/NNFoil.jl", rev = "main" }

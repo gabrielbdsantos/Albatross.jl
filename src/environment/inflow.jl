@@ -24,7 +24,7 @@ Return the inflow velocity vector.
 
 - `m`: A concrete subtype of [`AbstractInflow`](@ref).
 
-# Return
+# Returns
 
 A velocity vector expressed in the global reference frame (m/s).
 """

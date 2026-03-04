@@ -5,6 +5,7 @@ of vertical-axis wind turbines.
 module Albatross
 
 using ConcreteStructs: @concrete
+using FillArrays: Fill
 using NNFoil: NNFoil
 using NonlinearSolve: NonlinearSolve
 
@@ -28,9 +29,13 @@ include("turbine/h-darrieus.jl")
 
 include("aerodynamics/aerodynamics.jl")
 
+include("grid/grid.jl")
+include("grid/azimuthal.jl")
+include("grid/spanwise.jl")
+
 include("solvers/solvers.jl")
-include("solvers/dmst/discretization.jl")
-include("solvers/dmst/output.jl")
+
+include("solvers/dmst/core.jl")
 include("solvers/dmst/solver.jl")
 
 export
@@ -67,11 +72,21 @@ export
     AbstractSectionAerodynamics,
     NeuralSectionAerodynamics,
 
+    # Grid
+    AbstractGrid,
+    AbstractGrid1D,
+    UniformGrid1D,
+    AbstractAzimuthalGrid,
+    UniformAzimuthalGrid,
+    AbstractSpanwiseGrid,
+    UniformSpanwiseGrid,
+
     # Solvers
     AbstractSolver,
     solve,
-    AbstractDMSTDiscretization,
-    UniformAzimuth,
+
+    ## DMST
+    DMSTGrid,
     DMST
 
 end

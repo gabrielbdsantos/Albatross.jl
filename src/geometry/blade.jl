@@ -10,7 +10,7 @@ geometry at a given spanwise coordinate.
 # Interface methods
 
 - [`section`](@ref)
-- [`height`](@ref)
+- [`span`](@ref)
 """
 abstract type AbstractBladeGeometry end
 
@@ -27,11 +27,11 @@ Return the blade section geometry at spanwise coordinate `z`.
 function section end
 
 """
-    height(b::AbstractBladeGeometry)
+    span(b::AbstractBladeGeometry)
 
-Return the total blade height (m).
+Return the total blade span (m).
 """
-function height end
+function span end
 
 # Convenience geometry queries forwarded to the section
 # ---------------------------------------------------------------------
@@ -94,15 +94,15 @@ entire span.
 # Fields
 
 - `section`: Blade section geometry used for the entire blade.
-- `height`: Total blade height (m).
+- `span`: Total blade span (m).
 """
 @concrete struct UniformStraightBlade <: AbstractBladeGeometry
     section <: AbstractBladeSection
-    height
+    span
 end
 
-UniformStraightBlade(; section::T, height) where {T <: AbstractBladeSection} =
-    UniformStraightBlade(section, height)
+UniformStraightBlade(; section::AbstractBladeSection, span) =
+    UniformStraightBlade(section, span)
 
 section(b::UniformStraightBlade, _) = b.section
-height(b::UniformStraightBlade) = b.height
+span(b::UniformStraightBlade) = b.span

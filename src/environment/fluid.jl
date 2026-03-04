@@ -44,7 +44,7 @@ Return the speed of sound in the fluid in m/s.
 function speed_of_sound end
 
 """
-    IncompressibleFluid(; ρ=1.225, μ=1.5e-5) <: AbstractFluid
+    IncompressibleFluid <: AbstractFluid
 
 Incompressible fluid model.
 
@@ -52,7 +52,7 @@ This model assumes density and viscosity are uniform and independent of
 temperature, pressure, or spatial location. The speed of sound is treated as
 infinite.
 
-# Parameters
+# Fields
 
 - `ρ`: Fluid density (kg/m³)
 - `μ`: Dynamic viscosity (Pa·s)
@@ -69,23 +69,18 @@ viscosity(x::IncompressibleFluid) = x.μ
 speed_of_sound(::IncompressibleFluid) = Inf
 
 """
-    ConstantPropertyFluid(; ρ=1.225, μ=1.5e-5, c=343.0) <: AbstractFluid
+    ConstantPropertyFluid <: AbstractFluid
 
 Fluid model with uniform, time-invariant thermophysical properties.
 
 Unlike [`IncompressibleFluid`](@ref), this model defines a finite speed of
 sound, allowing simple compressibility corrections.
 
-# Parameters
+# Fields
 
 - `ρ`: Fluid density (kg/m³)
 - `μ`: Dynamic viscosity (Pa·s)
 - `c`: Speed of sound (m/s)
-
-# Note
-
-Useful for compressibility corrections (e.g. Prandtl–Glauert) while
-retaining spatially uniform properties.
 """
 @concrete struct ConstantPropertyFluid <: AbstractFluid
     ρ
