@@ -11,7 +11,7 @@ NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
 
 [sources]
 ConcreteStructs = {rev = "main", url = "https://github.com/gabrielbdsantos/ConcreteStructs.jl"}
-NNFoil = {rev = "main", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}
+NNFoil = {rev = "v0.1.6", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}
 
 [compat]
 julia = "1.11"
