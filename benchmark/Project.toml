@@ -1,11 +1,8 @@
 [deps]
 AirfoilDefinitions = "687bab45-8d53-4002-b6e1-68ad3e5a170a"
 Albatross = "3ca8fdff-dd54-46a1-887c-183655a5fc91"
-Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
-DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
-JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 NNFoil = "5d96e3f7-5e7b-44ae-828e-526bf7f0e78d"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [sources]
 AirfoilDefinitions = {rev = "v0.1.3", url = "https://github.com/gabrielbdsantos/AirfoilDefinitions.jl"}
