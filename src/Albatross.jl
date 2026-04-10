@@ -4,6 +4,7 @@ of vertical-axis wind turbines.
 """
 module Albatross
 
+using LinearAlgebra: LinearAlgebra
 using ConcreteStructs: @concrete
 using FillArrays: Fill
 using NNFoil: NNFoil
@@ -86,7 +87,11 @@ export
     solve,
 
     ## DMST
+    DMST,
     DMSTGrid,
-    DMST
+    DMSTOptions,
+    DMSTPassSolveStats,
+    DMSTSolveStats,
+    DMSTSolution
 
 end

@@ -63,11 +63,29 @@ end
 
     sol = solve(dmst)
 
+    @test sol isa Albatross.DMSTSolution
+    @test sol.upstream isa Albatross.DMSTOutput
+    @test sol.downstream isa Albatross.DMSTOutput
+    @test sol.stats isa Albatross.DMSTSolveStats
+    @test sol.integrated === nothing
+
+    @test sol.stats.upstream isa Albatross.DMSTPassSolveStats
+    @test sol.stats.downstream isa Albatross.DMSTPassSolveStats
+    @test sol.stats.upstream.converged
+    @test sol.stats.downstream.converged
+    @test isfinite(sol.stats.upstream.residual_norm)
+    @test isfinite(sol.stats.downstream.residual_norm)
+    @test sol.stats.coupling_iters == 0
+    @test sol.stats.coupling_converged
+
     nup = length(dmst.grid.azimuthal.upstream)
     ndn = length(dmst.grid.azimuthal.downstream)
-
     nexpected = nup + ndn
 
+    @test length(sol.upstream.a) == nup
+    @test length(sol.downstream.a) == ndn
+
+    # Keep these legacy tests for now
     @test length(sol.a) == nexpected
     @test length(sol.θ) == nexpected
     @test length(sol.Cth) == nexpected

@@ -13,7 +13,16 @@ the thrust coefficient computed from the aerodynamic streamtube evaluation.
 
 # Returns
 
-- [`DMSTOutput`](@ref)
+- [`DMSTSolution`](@ref), containing:
+    - `upstream`: upstream-half [`DMSTOutput`](@ref)
+    - `downstream`: downstream-half [`DMSTOutput`](@ref)
+    - `integrated`: integrated/global quantities (currently `nothing`)
+    - `stats`: [`DMSTSolveStats`](@ref) diagnostics
+
+!!! note "Backward compatibility"
+
+    Legacy field-style accessors (e.g. `sol.a`, `sol.Cth`, `sol.Cp`) are still
+    accessible and return concatenated upstream + downstream arrays.
 
 !!! note "Current limitations"
 
@@ -71,7 +80,35 @@ function solve(dmst::DMST)
         NonlinearSolve.SimpleNewtonRaphson()
     )
 
-    return [s_up(sol_up.u); s_down(sol_down.u)]
+    up_stats = DMSTPassSolveStats(
+        converged = NonlinearSolve.SciMLBase.successful_retcode(sol_up.retcode),
+        num_iters = 0,
+        residual_norm = LinearAlgebra.norm(sol_up.resid),
+        elapsed_time = 0.0,
+    )
+
+    down_stats = DMSTPassSolveStats(
+        converged = NonlinearSolve.SciMLBase.successful_retcode(sol_down.retcode),
+        num_iters = 0,
+        residual_norm = LinearAlgebra.norm(sol_down.resid),
+        elapsed_time = 0.0,
+    )
+
+    stats = DMSTSolveStats(
+        upstream = up_stats,
+        downstream = down_stats,
+        coupling_iters = 0,
+        coupling_residual = Inf,
+        coupling_converged = !dmst.options.enable_coupling,
+        elapsed_time = 0.0
+    )
+
+    return DMSTSolution(
+        upstream = s_up(sol_up.u),
+        downstream = s_down(sol_down.u),
+        integrated = nothing,
+        stats = stats
+    )
 end
 
 """
