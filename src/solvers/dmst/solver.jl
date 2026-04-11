@@ -140,6 +140,7 @@ function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
     t = nothing
     ω = angular_velocity(kinematics(turbine), t)
     blade = blades(turbine)
+    blade_section = section(blade, z)
     c = chord(blade, z)
     R = radial_pos(blade, z)
     H = span(blade)
@@ -147,54 +148,21 @@ function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
     ρ = density(ambient.fluid)
     μ = viscosity(ambient.fluid)
     c_sound = speed_of_sound(ambient.fluid)
+    B = num_blades(turbine)
+    sinθ = sin.(θ)
+    cosθ = cos.(θ)
+    abs_sinθ = abs.(sinθ)
 
-    # This is a mysterious coefficient. According to Ayati et. al. [1], this
-    # coefficient assumes different values across the literature. Some studies
-    # adopt k = 2 or even k = 4.
-    k = 1
-
-    # Local induced velocity (Equation 1).
-    U_a = @. U_in * (1 - a)
-
-    # Relative velocity experienced by the blade (Equation 8) and angle of
-    # attack (Equation 7).
-    U_r, aoa = local_flow_conditions(θ, U_a, ω, R)
-
-    # Local Reynolds and Mach numbers.
-    Re = @. ρ * U_r * c / μ
-    Ma = @. U_r / c_sound
-
-    # Defines the local flow state.
-    flow_state = LocalFlowState(aoa, Re, Ma)
-
-    # Estimates the local lift and drag coefficients.
-    aero_coeffs = aerodynamic_coefficients(
-        aerodynamics, flow_state, section(blades(turbine), z)
+    U_r, aoa = _local_kinematics(a, U_in, ω, R, sinθ, cosθ)
+    Re, Ma, Cl, Cd = _local_aerodynamics(
+        U_r, aoa, ρ, c, μ, c_sound, aerodynamics, blade_section
     )
-    Cl = aero_coeffs.Cl
-    Cd = aero_coeffs.Cd
-
-    # Tangential and normal force coefficients (Equations 9 and 10).
-    Ct = @. Cl * sin(aoa) - Cd * cos(aoa)
-    Cn = @. Cl * cos(aoa) + Cd * sin(aoa)
-
-    # Instantaneous thrust (Equation 11).
-    A_blade_surface = H * c
-    q_local = @. (1 / 2) * ρ * A_blade_surface * U_r^2
-    Th = @. q_local * -(Ct * cos(θ) + Cn * sin(θ))
-
-    Cq = @. R * Ct
-    Q = @. q_local * Cq
-
-    # Instantaneous thrust coefficient (Equation 13).
-    A_streamtube = @. H * R * Δθ * abs(sin(θ))
-    q_streamtube = @. (1 / 2) * ρ * A_streamtube * U_in^2
-    Cth = @. k * num_blades(turbine) / 2pi * (Δθ * Th) / q_streamtube
-
-    # Instantaneous power coefficient (Equation 14).
-    A_turbine = H * 2R
-    q_inf = @. (1 / 2) * ρ * A_turbine * U_inf^3
-    Cp = @. k * (num_blades(turbine) / 2pi) * (Δθ * Q * ω) / q_inf
+    Ct, Cn = _section_force_coefficients(aoa, Cl, Cd)
+    Th, Cth = _section_thrust(
+        U_r, U_in, Ct, Cn, B, H, R, c, ρ, Δθ, sinθ, cosθ, abs_sinθ
+    )
+    Q, Cq = _section_torque(U_r, Ct, H, R, c, ρ)
+    P, Cp = _section_power(Q, ω, H, R, ρ, U_inf, Δθ, B)
 
     return DMSTOutput(
         a = a, θ = θ, U_r = U_r, aoa = aoa, Re = Re, Ma = Ma, Cl = Cl, Cd = Cd,
@@ -202,35 +170,72 @@ function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
     )
 end
 
-"""
-    local_flow_conditions(θ, U, ω, R)
+function _local_kinematics(a, U_in, ω, R, sinθ, cosθ)
+    # Local induced velocity (Equation 1).
+    U_a = @. U_in * (1 - a)
 
-Compute the local relative velocity magnitude and angle of attack for a
-blade section at the given conditions.
-
-# Arguments
-
-- `θ`: Azimuth angles (rad).
-- `U`: Local axial/streamtube velocity at the rotor plane (m/s).
-- `ω`: Rotor angular velocity (rad/s).
-- `R`: Rotor radius (m).
-
-# Returns
-
-- `U_r`: Relative velocity magnitude (m/s).
-- `aoa`: Angle of attack (rad).
-
-# Notes
-
-Sign conventions follow the current DMST implementation; changes to azimuth
-reference or rotation direction should be reflected here consistently.
-"""
-function local_flow_conditions(θ, U, ω, R)
-    Vt = @. -(ω * R + U * cos(θ))
-    Vn = @. -U * sin(θ)
+    # Relative velocity experienced by the blade (Equation 8) and angle of
+    # attack (Equation 7).
+    Vt = @. -(ω * R + U_a * cosθ)
+    Vn = @. -U_a * sinθ
 
     U_r = @. sqrt(Vt^2 + Vn^2)
     aoa = @. atan(Vn, -Vt)
 
-    return U_r, aoa
+    return (; U_r, aoa)
+end
+
+function _local_aerodynamics(U_r, aoa, ρ, c, μ, c_sound, model, blade_section)
+    Re = @. ρ * U_r * c / μ
+    Ma = @. U_r / c_sound
+    flow_state = LocalFlowState(aoa, Re, Ma)
+
+    # Estimates the local lift and drag coefficients.
+    aero_coeffs = aerodynamic_coefficients(model, flow_state, blade_section)
+
+    return Re, Ma, aero_coeffs.Cl, aero_coeffs.Cd
+end
+
+function _section_force_coefficients(aoa, Cl, Cd)
+    # Tangential and normal force coefficients (Equations 9 and 10).
+    Ct = @. Cl * sin(aoa) - Cd * cos(aoa)
+    Cn = @. Cl * cos(aoa) + Cd * sin(aoa)
+
+    return (; Ct, Cn)
+end
+
+function _section_thrust(U_r, U_in, Ct, Cn, B, H, R, c, ρ, Δθ, sinθ, cosθ, abs_sinθ)
+    k = 1
+
+    # Instantaneous thrust (Equation 11).
+    A_blade_surface = H * c
+    q_local = @. 0.5 * ρ * A_blade_surface * U_r^2
+    Th = @. q_local * -(Ct * cosθ + Cn * sinθ)
+
+    # Instantaneous thrust coefficient (Equation 13).
+    A_streamtube = @. H * R * Δθ * abs_sinθ
+    q_streamtube = @. 0.5 * ρ * A_streamtube * U_in^2
+    Cth = @. k * B / 2pi * (Δθ * Th) / q_streamtube
+
+    return (; Th, Cth)
+end
+
+function _section_torque(U_r, Ct, H, R, c, ρ)
+    A_blade_surface = H * c
+    q_local = @. 0.5 * ρ * A_blade_surface * U_r^2
+    Cq = @. R * Ct
+    Q = @. q_local * Cq
+
+    return (; Q, Cq)
+end
+
+function _section_power(Q, ω, H, R, ρ, U_inf, Δθ, B)
+    k = 1
+    P = @. Q * ω
+
+    A_turbine = H * 2R
+    q_inf = @. 0.5 * ρ * A_turbine * U_inf^3
+    Cp = @. k * (B / 2pi) * (Δθ * P) / q_inf
+
+    return (; P, Cp)
 end
