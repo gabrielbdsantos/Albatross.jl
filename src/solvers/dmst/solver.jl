@@ -32,51 +32,44 @@ the thrust coefficient computed from the aerodynamic streamtube evaluation.
 """
 function solve(dmst::DMST)
     U_inf = velocity(dmst.environment.inflow)
+    ctx_up = make_streamtube_context(
+        points(dmst.grid.azimuthal.upstream),
+        weights(dmst.grid.azimuthal.upstream),
+        U_inf,
+        dmst.turbine,
+        dmst.environment,
+        dmst.aerodynamics
+    )
 
-    function s_up(u)
-        return streamtube(
-            u,
-            points(dmst.grid.azimuthal.upstream),
-            weights(dmst.grid.azimuthal.upstream),
-            U_inf,
-            dmst.turbine,
-            dmst.environment,
-            dmst.aerodynamics
-        )
-    end
-
-    function f_up(du, u, _)
-        du .= drag_coefficient.(dmst.momentum, u) .- s_up(u).Cth
+    function residual_up(du, u, _)
+        du .= drag_coefficient.(dmst.momentum, u) .- streamtube(u, ctx_up).Cth
         return nothing
     end
 
     u0 = zeros(length(dmst.grid.azimuthal.upstream))
     sol_up = NonlinearSolve.solve(
-        NonlinearSolve.NonlinearProblem{true}(f_up, u0),
+        NonlinearSolve.NonlinearProblem{true}(residual_up, u0),
         NonlinearSolve.SimpleNewtonRaphson()
     )
 
     U_wake = U_inf .* wake_velocity_ratio.(dmst.momentum, reverse(sol_up.u))
-    function s_down(u)
-        return streamtube(
-            u,
-            points(dmst.grid.azimuthal.downstream),
-            weights(dmst.grid.azimuthal.downstream),
-            U_wake,
-            dmst.turbine,
-            dmst.environment,
-            dmst.aerodynamics
-        )
-    end
+    ctx_down = make_streamtube_context(
+        points(dmst.grid.azimuthal.downstream),
+        weights(dmst.grid.azimuthal.downstream),
+        U_wake,
+        dmst.turbine,
+        dmst.environment,
+        dmst.aerodynamics
+    )
 
-    function f_down(du, u, _)
-        du .= drag_coefficient.(dmst.momentum, u) .- s_down(u).Cth
+    function residual_down(du, u, _)
+        du .= drag_coefficient.(dmst.momentum, u) .- streamtube(u, ctx_down).Cth
         return nothing
     end
 
     u0 = zeros(length(dmst.grid.azimuthal.downstream))
     sol_down = NonlinearSolve.solve(
-        NonlinearSolve.NonlinearProblem{true}(f_down, u0),
+        NonlinearSolve.NonlinearProblem{true}(residual_down, u0),
         NonlinearSolve.SimpleNewtonRaphson()
     )
 
@@ -104,8 +97,8 @@ function solve(dmst::DMST)
     )
 
     return DMSTSolution(
-        upstream = s_up(sol_up.u),
-        downstream = s_down(sol_down.u),
+        upstream = streamtube(sol_up.u, ctx_up),
+        downstream = streamtube(sol_down.u, ctx_down),
         integrated = nothing,
         stats = stats
     )
@@ -136,36 +129,25 @@ contributions for a single streamtube evaluation (upstream or downstream).
 - [`DMSTOutput`](@ref) with field values evaluated at each `θ`.
 """
 function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
-    z = nothing
-    t = nothing
-    ω = angular_velocity(kinematics(turbine), t)
-    blade = blades(turbine)
-    blade_section = section(blade, z)
-    c = chord(blade, z)
-    R = radial_pos(blade, z)
-    H = span(blade)
-    U_inf = velocity(ambient.inflow)
-    ρ = density(ambient.fluid)
-    μ = viscosity(ambient.fluid)
-    c_sound = speed_of_sound(ambient.fluid)
-    B = num_blades(turbine)
-    sinθ = sin.(θ)
-    cosθ = cos.(θ)
-    abs_sinθ = abs.(sinθ)
+    ctx = make_streamtube_context(θ, Δθ, U_in, turbine, ambient, aerodynamics)
+    return streamtube(a, ctx)
+end
 
-    U_r, aoa = _local_kinematics(a, U_in, ω, R, sinθ, cosθ)
+function streamtube(a, ctx::StreamtubeContext)
+    U_r, aoa = _local_kinematics(a, ctx.U_in, ctx.ω, ctx.R, ctx.sinθ, ctx.cosθ)
     Re, Ma, Cl, Cd = _local_aerodynamics(
-        U_r, aoa, ρ, c, μ, c_sound, aerodynamics, blade_section
+        U_r, aoa, ctx.c, ctx.ρ, ctx.μ, ctx.c_sound, ctx.aerodynamics, ctx.section
     )
     Ct, Cn = _section_force_coefficients(aoa, Cl, Cd)
     Th, Cth = _section_thrust(
-        U_r, U_in, Ct, Cn, B, H, R, c, ρ, Δθ, sinθ, cosθ, abs_sinθ
+        U_r, ctx.U_in, Ct, Cn, ctx.B, ctx.H, ctx.R, ctx.c, ctx.ρ,
+        ctx.Δθ, ctx.sinθ, ctx.cosθ, ctx.abs_sinθ
     )
-    Q, Cq = _section_torque(U_r, Ct, H, R, c, ρ)
-    P, Cp = _section_power(Q, ω, H, R, ρ, U_inf, Δθ, B)
+    Q, Cq = _section_torque(U_r, Ct, ctx.H, ctx.R, ctx.c, ctx.ρ)
+    P, Cp = _section_power(Q, ctx.ω, ctx.H, ctx.R, ctx.ρ, ctx.U_inf, ctx.Δθ, ctx.B)
 
     return DMSTOutput(
-        a = a, θ = θ, U_r = U_r, aoa = aoa, Re = Re, Ma = Ma, Cl = Cl, Cd = Cd,
+        a = a, θ = ctx.θ, U_r = U_r, aoa = aoa, Re = Re, Ma = Ma, Cl = Cl, Cd = Cd,
         Ct = Ct, Cn = Cn, Th = Th, Cq = Cq, Q = Q, Cth = Cth, Cp = Cp,
     )
 end
@@ -185,7 +167,7 @@ function _local_kinematics(a, U_in, ω, R, sinθ, cosθ)
     return (; U_r, aoa)
 end
 
-function _local_aerodynamics(U_r, aoa, ρ, c, μ, c_sound, model, blade_section)
+function _local_aerodynamics(U_r, aoa, c, ρ, μ, c_sound, model, blade_section)
     Re = @. ρ * U_r * c / μ
     Ma = @. U_r / c_sound
     flow_state = LocalFlowState(aoa, Re, Ma)

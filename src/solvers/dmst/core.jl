@@ -264,3 +264,60 @@ Base.propertynames(::DMSTSolution, private::Bool = false) = (
     fieldnames(DMSTSolution)...,
     _DMST_OUTPUT_KEYS...,
 )
+
+@concrete struct StreamtubeContext
+    θ
+    Δθ
+    U_in
+
+    sinθ
+    cosθ
+    abs_sinθ
+
+    ω
+    c
+    R
+    H
+    U_inf
+    ρ
+    μ
+    c_sound
+    B
+    k
+
+    section <: AbstractBladeSection
+    aerodynamics <: AbstractSectionAerodynamics
+end
+
+function make_streamtube_context(θ, Δθ, U_in, turbine, ambient, aerodynamics)
+    z = nothing
+    t = nothing
+
+    blade = blades(turbine)
+    blade_section = section(blade, z)
+
+    sinθ = sin.(θ)
+    cosθ = cos.(θ)
+    abs_sinθ = abs.(sinθ)
+
+    return StreamtubeContext(
+        θ,
+        Δθ,
+        U_in,
+        sinθ,
+        cosθ,
+        abs_sinθ,
+        angular_velocity(kinematics(turbine), t),
+        chord(blade, z),
+        radial_pos(blade, z),
+        span(blade),
+        velocity(ambient.inflow),
+        density(ambient.fluid),
+        viscosity(ambient.fluid),
+        speed_of_sound(ambient.fluid),
+        num_blades(turbine),
+        1,
+        blade_section,
+        aerodynamics,
+    )
+end
