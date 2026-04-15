@@ -14,10 +14,10 @@ the thrust coefficient computed from the aerodynamic streamtube evaluation.
 # Returns
 
 - [`DMSTSolution`](@ref), containing:
-    - `upstream`: upstream-half [`DMSTOutput`](@ref)
-    - `downstream`: downstream-half [`DMSTOutput`](@ref)
+    - `upstream`: upstream half-cycle [`DMSTOutput`](@ref)
+    - `downstream`: downstream half-cycle [`DMSTOutput`](@ref)
     - `integrated`: integrated/global quantities (currently `nothing`)
-    - `stats`: [`DMSTSolveStats`](@ref) diagnostics
+    - `stats`: solver diagnostics [`DMSTSolveStats`](@ref)
 
 !!! note "Backward compatibility"
 
@@ -41,18 +41,10 @@ function solve(dmst::DMST)
         dmst.aerodynamics
     )
 
-    function residual_up(du, u, _)
-        du .= drag_coefficient.(dmst.momentum, u) .- streamtube(u, ctx_up).Cth
-        return nothing
-    end
+    a_up, up_stats = _solve_per_streamtube(ctx_up, dmst.momentum, dmst.options)
+    up_streamtube = streamtube(a_up, ctx_up)
 
-    u0 = zeros(length(dmst.grid.azimuthal.upstream))
-    sol_up = NonlinearSolve.solve(
-        NonlinearSolve.NonlinearProblem{true}(residual_up, u0),
-        NonlinearSolve.SimpleNewtonRaphson()
-    )
-
-    U_wake = U_inf .* wake_velocity_ratio.(dmst.momentum, reverse(sol_up.u))
+    U_wake = U_inf .* wake_velocity_ratio.(dmst.momentum, reverse(a_up))
     ctx_down = make_streamtube_context(
         points(dmst.grid.azimuthal.downstream),
         weights(dmst.grid.azimuthal.downstream),
@@ -62,30 +54,8 @@ function solve(dmst::DMST)
         dmst.aerodynamics
     )
 
-    function residual_down(du, u, _)
-        du .= drag_coefficient.(dmst.momentum, u) .- streamtube(u, ctx_down).Cth
-        return nothing
-    end
-
-    u0 = zeros(length(dmst.grid.azimuthal.downstream))
-    sol_down = NonlinearSolve.solve(
-        NonlinearSolve.NonlinearProblem{true}(residual_down, u0),
-        NonlinearSolve.SimpleNewtonRaphson()
-    )
-
-    up_stats = DMSTPassSolveStats(
-        converged = NonlinearSolve.SciMLBase.successful_retcode(sol_up.retcode),
-        num_iters = 0,
-        residual_norm = LinearAlgebra.norm(sol_up.resid),
-        elapsed_time = 0.0,
-    )
-
-    down_stats = DMSTPassSolveStats(
-        converged = NonlinearSolve.SciMLBase.successful_retcode(sol_down.retcode),
-        num_iters = 0,
-        residual_norm = LinearAlgebra.norm(sol_down.resid),
-        elapsed_time = 0.0,
-    )
+    a_down, down_stats = _solve_per_streamtube(ctx_down, dmst.momentum, dmst.options)
+    down_streamtube = streamtube(a_down, ctx_down)
 
     stats = DMSTSolveStats(
         upstream = up_stats,
@@ -97,11 +67,49 @@ function solve(dmst::DMST)
     )
 
     return DMSTSolution(
-        upstream = streamtube(sol_up.u, ctx_up),
-        downstream = streamtube(sol_down.u, ctx_down),
+        upstream = up_streamtube,
+        downstream = down_streamtube,
         integrated = nothing,
         stats = stats
     )
+end
+
+function _solve_per_streamtube(
+        ctx::StreamtubeContext,
+        momentum::AbstractMomentumTheory,
+        options::DMSTOptions
+    )
+    a = similar(ctx.θ)
+    a_min, a_max = options.induction_bounds
+    current_u = zero(_get_value(ctx.θ, 1))
+
+    stats = UncoupledStreamtubeSolveStats(length(ctx.θ))
+
+    for i in axes(ctx.θ, 1)
+        current_ctx = _make_single_streamtube_context(ctx, i)
+        residual(u, _) = drag_coefficient(momentum, u) - streamtube(u, current_ctx).Cth[1]
+
+        prob = NonlinearSolve.NonlinearProblem(residual, current_u)
+        sol = NonlinearSolve.solve(
+            prob,
+            NonlinearSolve.SimpleNewtonRaphson();
+            abstol = options.abstol,
+            reltol = options.reltol,
+            maxiters = options.maxiters
+        )
+
+        stats.converged[i] = NonlinearSolve.SciMLBase.successful_retcode(sol.retcode) && isfinite(sol.u)
+        stats.residual[i] = sol.resid
+
+        # NOTE:NonlinearSolve.SimpleNewtonRaphson() returns `nothing` for sol.stats.
+        # Thus far there is no way to get the number of iterations.
+        # Need to check this later.
+        stats.num_iters[i] = 0 # sol.stats.nsteps
+
+        a[i] = current_u = clamp(stats.converged[i] ? sol.u : current_u, a_min, a_max)
+    end
+
+    return a, stats
 end
 
 """

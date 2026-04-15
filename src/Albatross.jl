@@ -90,7 +90,6 @@ export
     DMST,
     DMSTGrid,
     DMSTOptions,
-    DMSTPassSolveStats,
     DMSTSolveStats,
     DMSTSolution
 

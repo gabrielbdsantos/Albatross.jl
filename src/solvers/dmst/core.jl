@@ -109,31 +109,57 @@ DMST(;
     turbine, environment, momentum, aerodynamics, grid, options = DMSTOptions()
 ) = DMST(turbine, environment, momentum, aerodynamics, grid, options)
 
-"""
-    DMSTPassSolveStats
 
-Diagnostics for a DMST nonlinear half-pass solution.
+abstract type AbstractStreamtubeSolveStats end
+
+"""
+    CoupledStreamtubeSolveStats
+
+Diagnostics for a coupled DMST nonlinear solution.
 
 # Fields
 
 - `converged`: Whether the nonlinear solve converged.
 - `num_iters`: Number of nonlinear iterations performed.
-- `residual_norm`: Final scalar residual norm.
-- `elapsed_time`: Wall-clock time spent in this pass solve (in seconds).
+- `residual`: Final residual.
+- `elapsed_time`: Wall-clock time spent in this solve (in seconds).
 """
-@concrete struct DMSTPassSolveStats
+@concrete struct CoupledStreamtubeSolveStats <: AbstractStreamtubeSolveStats
     converged <: Bool
     num_iters <: Integer
-    residual_norm <: Real
+    residual <: Real
     elapsed_time <: Real
 end
 
-DMSTPassSolveStats(;
+CoupledStreamtubeSolveStats(;
     converged = false,
     num_iters = 0,
-    residual_norm = Inf,
+    residual = Inf,
     elapsed_time = 0.0,
-) = DMSTPassSolveStats(converged, num_iters, residual_norm, elapsed_time)
+) = CoupledStreamtubeSolveStats(converged, num_iters, residual, elapsed_time)
+
+"""
+    UncoupledStreamtubeSolveStats
+
+Diagnostics for an uncoupled DMST nonlinear solution.
+
+# Fields
+
+- `converged`: Whether the nonlinear solve converged.
+- `num_iters`: Number of nonlinear iterations performed.
+- `residual`: Final residual.
+- `elapsed_time`: Wall-clock time spent in each streamtube solve (in seconds).
+"""
+@concrete struct UncoupledStreamtubeSolveStats <: AbstractStreamtubeSolveStats
+    converged <: AbstractVector{Bool}
+    residual <: AbstractVector{<:Real}
+    num_iters <: AbstractVector{<:Integer}
+    elapsed_time <: AbstractVector{<:Real}
+end
+
+UncoupledStreamtubeSolveStats(n) = UncoupledStreamtubeSolveStats(
+    falses(n), fill(Inf, n), zeros(Int, n), zeros(n)
+)
 
 """
     DMSTSolveStats
@@ -142,8 +168,8 @@ Diagnostics for a complete DMST nonlinear solve.
 
 # Fields
 
-- `upstream<:DMSTPassSolveStats`: Upstream pass diagnostic.
-- `downstream<:DMSTPassSolveStats`: Downstream pass diagnostic.
+- `upstream<:AbstractStreamtubeSolveStats`: Upstream pass diagnostic.
+- `downstream<:AbstractStreamtubeSolveStats`: Downstream pass diagnostic.
 - `coupling_iters`: Number of outer upstream/downstream coupling iterations.
 - `coupling_residual`: Final coupling residual norm.
 - `coupling_converged`: Whether coupling loop convergence was reached.
@@ -151,11 +177,11 @@ Diagnostics for a complete DMST nonlinear solve.
 
 # See also
 
-[`DMSTPassSolveStats`](@ref)
+[`AbstractStreamtubeSolveStats`](@ref)
 """
 @concrete struct DMSTSolveStats
-    upstream <: DMSTPassSolveStats
-    downstream <: DMSTPassSolveStats
+    upstream <: AbstractStreamtubeSolveStats
+    downstream <: AbstractStreamtubeSolveStats
     coupling_iters <: Integer
     coupling_residual <: Real
     coupling_converged <: Bool
@@ -163,8 +189,8 @@ Diagnostics for a complete DMST nonlinear solve.
 end
 
 DMSTSolveStats(;
-    upstream = DMSTPassSolveStats(),
-    downstream = DMSTPassSolveStats(),
+    upstream = CoupledStreamtubeSolveStats(),
+    downstream = CoupledStreamtubeSolveStats(),
     coupling_iters = 0,
     coupling_residual = Inf,
     coupling_converged = false,
@@ -321,3 +347,15 @@ function make_streamtube_context(θ, Δθ, U_in, turbine, ambient, aerodynamics)
         aerodynamics,
     )
 end
+
+function _make_single_streamtube_context(ctx::StreamtubeContext, i::Int)
+    return StreamtubeContext(
+        [
+            _get_value(getproperty(ctx, p), i)
+                for p in fieldnames(StreamtubeContext)
+        ]...
+    )
+end
+
+_get_value(x::AbstractVector, i::Int) = x[i]
+_get_value(x, ::Int) = x
