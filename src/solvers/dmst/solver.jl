@@ -86,8 +86,7 @@ function _solve_per_streamtube(
     stats = UncoupledStreamtubeSolveStats(length(ctx.θ))
 
     for i in axes(ctx.θ, 1)
-        current_ctx = _make_single_streamtube_context(ctx, i)
-        residual(u, _) = drag_coefficient(momentum, u) - streamtube(u, current_ctx).Cth[1]
+        residual(u, _) = drag_coefficient(momentum, u) - _streamtube_thrust_coefficient(u, ctx, i)
 
         prob = NonlinearSolve.NonlinearProblem(residual, current_u)
         sol = NonlinearSolve.solve(
@@ -158,6 +157,25 @@ function streamtube(a, ctx::StreamtubeContext)
         a = a, θ = ctx.θ, U_r = U_r, aoa = aoa, Re = Re, Ma = Ma, Cl = Cl, Cd = Cd,
         Ct = Ct, Cn = Cn, Th = Th, Q = Q, P = P, Cth = Cth, Cq = Cq, Cp = Cp,
     )
+end
+
+function _streamtube_thrust_coefficient(a, ctx::StreamtubeContext, i::Int)
+    U_in = _getindex(ctx.U_in, i)
+
+    U_r, aoa = _local_kinematics(a, U_in, ctx.ω, ctx.R, ctx.sinθ[i], ctx.cosθ[i])
+
+    # NOTE: Cl and Cd are one-sized vectors. Need to check this later and
+    # perhaps update NNFoil.jl
+    _, _, Cl, Cd = _local_aerodynamics(
+        U_r, aoa, ctx.c, ctx.ρ, ctx.μ, ctx.c_sound, ctx.aerodynamics, ctx.section
+    )
+    Ct, Cn = _section_force_coefficients(aoa, Cl[1], Cd[1])
+    _, Cth = _section_thrust(
+        U_r, U_in, Ct, Cn, ctx.B, ctx.H, ctx.R, ctx.c, ctx.ρ,
+        ctx.Δθ[i], ctx.sinθ[i], ctx.cosθ[i], ctx.abs_sinθ[i]
+    )
+
+    return Cth
 end
 
 function _local_kinematics(a, U_in, ω, R, sinθ, cosθ)
