@@ -1,0 +1,110 @@
+"""
+    DMSTGrid
+
+Data type that bundles the azimuthal and spanwise grids used for DMST
+computations.
+
+# Fields
+
+- `azimuthal <: AbstractAzimuthalGrid`: azimuthal grid
+- `spanwise <: AbstractSpanwiseGrid`: spanwise grid
+
+# See also
+
+[`AbstractAzimuthalGrid`](@ref), [`AbstractSpanwiseGrid`](@ref),
+[`AbstractGrid`](@ref)
+"""
+@concrete struct DMSTGrid
+    azimuthal <: AbstractAzimuthalGrid
+    spanwise <: AbstractSpanwiseGrid
+end
+
+DMSTGrid(; azimuthal, spanwise) = DMSTGrid(azimuthal, spanwise)
+
+"""
+    DMSTOptions
+
+Numerical controls for the DMST solver.
+
+# Fields
+
+- `abstol`: Absolute tolerance for nonlinear residual convergence.
+- `reltol`: Relative tolerance for nonlinear residual convergence.
+- `maxiters`: Maximum nonlinear iterations per solve stage.
+- `induction_bounds`: Allowed induction-factor interval `(a_min, a_max)`.
+- `damping`: Generic damping/relaxation factor (0, 1].
+- `enable_coupling`: Enable upstream/downstream outer coupling iterations.
+- `coupling_maxiters`: Max outer iterations for upstream/downstream coupling.
+- `coupling_tol`: Absolute tolerance for coupling convergence.
+"""
+@concrete struct DMSTOptions
+    abstol <: Real
+    reltol <: Real
+    maxiters <: Integer
+    induction_bounds <: Tuple{<:Real, <:Real}
+    damping <: Real
+    enable_coupling <: Bool
+    coupling_maxiters <: Integer
+    coupling_tol <: Real
+end
+
+DMSTOptions(;
+    abstol = 1.0e-8,
+    reltol = 1.0e-8,
+    maxiters = 100,
+    induction_bounds = (-Inf, Inf),
+    damping = 1.0,
+    enable_coupling = false,
+    coupling_maxiters = 1,
+    coupling_tol = 1.0e-8,
+) = DMSTOptions(
+    abstol, reltol, maxiters, induction_bounds, damping, enable_coupling,
+    coupling_maxiters, coupling_tol
+)
+
+"""
+    DMST <: AbstractSolver
+
+Double-Multiple Streamtube (DMST) solver for Darrieus-type VAWTs.
+
+`DMST` combines a turbine model, environmental conditions, a momentum/induction
+model, a section aerodynamics model, and an azimuthal discretization method to
+compute local loads and performance quantities over the upstream and downstream
+half-rotations.
+
+!!! note "Current limitations"
+
+    The current `solve(::DMST)` implementation assumes a simplified
+    turbine/blade representation and will be generalized as the geometry
+    interfaces mature.
+
+# Fields
+
+- `turbine<:AbstractDarrieusTurbine`: Darrieus turbine model to be solved.
+- `environment<:EnvironmentConditions`: Ambient/environmental conditions
+    (fluid and inflow).
+- `momentum<:AbstractMomentumTheory`: Momentum/induction submodel used to
+  relate induction to thrust.
+- `aerodynamics<:AbstractSectionAerodynamics`: Section aerodynamics model
+  returning airfoil coefficients.
+- `grid<:DMSTGrid`: DMST grid definition (azimuthal and spanwise points and
+    weights).
+- `options<:DMSTOptions`: Numerical controls for convergence tolerances,
+    iteration limits, induction bounds, damping, and coupling settings.
+
+# See also
+
+[`DMSTGrid`](@ref), [`DMSTOptions`](@ref)
+"""
+@concrete struct DMST <: AbstractSolver
+    turbine <: AbstractDarrieusTurbine
+    environment <: EnvironmentConditions
+    momentum <: AbstractMomentumTheory
+    aerodynamics <: AbstractSectionAerodynamics
+    grid <: DMSTGrid
+    options <: DMSTOptions
+end
+
+DMST(;
+    turbine, environment, momentum, aerodynamics, grid, options = DMSTOptions()
+) = DMST(turbine, environment, momentum, aerodynamics, grid, options)

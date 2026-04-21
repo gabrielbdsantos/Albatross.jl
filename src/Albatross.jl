@@ -35,9 +35,7 @@ include("grid/azimuthal.jl")
 include("grid/spanwise.jl")
 
 include("solvers/solvers.jl")
-
-include("solvers/dmst/core.jl")
-include("solvers/dmst/solver.jl")
+include("solvers/dmst/dmst.jl")
 
 export
     # Momentum
