@@ -1,13 +1,18 @@
+[tasks.update]
+description = "Update Julia environments"
+run = """
+{% for env in [".","benchmark","examples","test","docs"] %}
+  julia --project={{env}} -e 'import Pkg; Pkg.update()'
+{% endfor %}
+"""
+
 [tasks.test]
 description = "Run tests for Albatross.jl"
 usage = """
-flag "-U --update" help="Update the test environment before running tests"
+arg "[args]" var=#true help="Test ARGS" default=""
 """
 run = """
-{% if usage.update %}
-julia --project=test -e 'import Pkg; Pkg.update()'
-{% endif %}
-julia --project -e 'import Pkg; Pkg.test()'
+julia --project -e 'import Pkg; Pkg.test(; test_args=ARGS)' ${usage_args}
 """
 
 [tasks.benchmark]
