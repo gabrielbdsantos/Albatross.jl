@@ -221,9 +221,10 @@ collocation points used by the DMST discretization.
 - `Ct`: Tangential force coefficient in rotor/blade axes (-).
 - `Cn`: Normal force coefficient in rotor/blade axes (-).
 - `Th`: Instantaneous thrust/normal load contribution (N).
-- `Cq`: Instantaneous torque coefficient (-).
 - `Q`: Instantaneous torque (N·m).
+- `P`: Instantaneous power (W).
 - `Cth`: Instantaneous thrust coefficient contribution (-).
+- `Cq`: Instantaneous torque coefficient (-).
 - `Cp`: Instantaneous power coefficient contribution (-).
 
 # See also
@@ -231,11 +232,11 @@ collocation points used by the DMST discretization.
 [`DMSTGrid`](@ref)
 """
 @concrete struct DMSTOutput
-    a; θ; U_r; aoa; Re; Ma; Cl; Cd; Ct; Cn; Th; Cq; Q; Cth; Cp
+    a; θ; U_r; aoa; Re; Ma; Cl; Cd; Ct; Cn; Th; Q; P; Cth; Cq; Cp
 end
 
-function DMSTOutput(; a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Cq, Q, Cth, Cp)
-    return DMSTOutput(a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Cq, Q, Cth, Cp)
+function DMSTOutput(; a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Q, P, Cth, Cq, Cp)
+    return DMSTOutput(a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Q, P, Cth, Cq, Cp)
 end
 
 @define_cat_methods DMSTOutput
@@ -270,13 +271,11 @@ DMSTSolution(;
     stats = DMSTSolveStats(),
 ) = DMSTSolution(upstream, downstream, integrated, stats)
 
-# NOTE: backward-compat accessors on DMSTSolution
-const _DMST_OUTPUT_KEYS = fieldnames(DMSTOutput)
-
+# NOTE: backward-compatiable accessors on DMSTSolution
 function Base.getproperty(sol::DMSTSolution, name::Symbol)
     if name in fieldnames(DMSTSolution)
         return getfield(sol, name)
-    elseif name in _DMST_OUTPUT_KEYS
+    elseif name in fieldnames(DMSTOutput)
         up = getproperty(getfield(sol, :upstream), name)
         dn = getproperty(getfield(sol, :downstream), name)
         return [up; dn]
@@ -288,7 +287,7 @@ end
 
 Base.propertynames(::DMSTSolution, private::Bool = false) = (
     fieldnames(DMSTSolution)...,
-    _DMST_OUTPUT_KEYS...,
+    fieldnames(DMSTOutput)...,
 )
 
 @concrete struct StreamtubeContext
@@ -351,11 +350,11 @@ end
 function _make_single_streamtube_context(ctx::StreamtubeContext, i::Int)
     return StreamtubeContext(
         [
-            _get_value(getproperty(ctx, p), i)
+            _getindex(getproperty(ctx, p), i)
                 for p in fieldnames(StreamtubeContext)
         ]...
     )
 end
 
-_get_value(x::AbstractVector, i::Int) = x[i]
-_get_value(x, ::Int) = x
+@inline _getindex(x::AbstractVector, i::Int) = Base.getindex(x, i)
+@inline _getindex(x, ::Int) = x

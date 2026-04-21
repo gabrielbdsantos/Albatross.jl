@@ -81,7 +81,7 @@ function _solve_per_streamtube(
     )
     a = similar(ctx.θ)
     a_min, a_max = options.induction_bounds
-    current_u = zero(_get_value(ctx.θ, 1))
+    current_u = zero(_getindex(ctx.θ, 1))
 
     stats = UncoupledStreamtubeSolveStats(length(ctx.θ))
 
@@ -156,7 +156,7 @@ function streamtube(a, ctx::StreamtubeContext)
 
     return DMSTOutput(
         a = a, θ = ctx.θ, U_r = U_r, aoa = aoa, Re = Re, Ma = Ma, Cl = Cl, Cd = Cd,
-        Ct = Ct, Cn = Cn, Th = Th, Cq = Cq, Q = Q, Cth = Cth, Cp = Cp,
+        Ct = Ct, Cn = Cn, Th = Th, Q = Q, P = P, Cth = Cth, Cq = Cq, Cp = Cp,
     )
 end
 
@@ -198,7 +198,7 @@ function _section_thrust(U_r, U_in, Ct, Cn, B, H, R, c, ρ, Δθ, sinθ, cosθ, 
     k = 1
 
     # Instantaneous thrust (Equation 11).
-    A_blade_surface = H * c
+    A_blade_surface = @. H * c
     q_local = @. 0.5 * ρ * A_blade_surface * U_r^2
     Th = @. q_local * -(Ct * cosθ + Cn * sinθ)
 
@@ -211,7 +211,7 @@ function _section_thrust(U_r, U_in, Ct, Cn, B, H, R, c, ρ, Δθ, sinθ, cosθ, 
 end
 
 function _section_torque(U_r, Ct, H, R, c, ρ)
-    A_blade_surface = H * c
+    A_blade_surface = @. H * c
     q_local = @. 0.5 * ρ * A_blade_surface * U_r^2
     Cq = @. R * Ct
     Q = @. q_local * Cq
@@ -223,7 +223,7 @@ function _section_power(Q, ω, H, R, ρ, U_inf, Δθ, B)
     k = 1
     P = @. Q * ω
 
-    A_turbine = H * 2R
+    A_turbine = @. H * 2R
     q_inf = @. 0.5 * ρ * A_turbine * U_inf^3
     Cp = @. k * (B / 2pi) * (Δθ * P) / q_inf
 
