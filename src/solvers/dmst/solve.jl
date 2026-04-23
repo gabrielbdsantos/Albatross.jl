@@ -14,15 +14,10 @@ the thrust coefficient computed from the aerodynamic streamtube evaluation.
 # Returns
 
 - [`DMSTSolution`](@ref), containing:
-    - `upstream`: upstream half-cycle [`DMSTOutput`](@ref)
-    - `downstream`: downstream half-cycle [`DMSTOutput`](@ref)
+    - `upstream`: upstream half-cycle [`DMSTStreamtubeOutput`](@ref)
+    - `downstream`: downstream half-cycle [`DMSTStreamtubeOutput`](@ref)
     - `integrated`: integrated/global quantities (currently `nothing`)
     - `stats`: solver diagnostics [`DMSTSolveStats`](@ref)
-
-!!! note "Backward compatibility"
-
-    Legacy field-style accessors (e.g. `sol.a`, `sol.Cth`, `sol.Cp`) are still
-    accessible and return concatenated upstream + downstream arrays.
 
 !!! note "Current limitations"
 
@@ -41,8 +36,8 @@ function solve(dmst::DMST)
         dmst.aerodynamics
     )
 
-    a_up, up_stats = _solve_per_streamtube(ctx_up, dmst.momentum, dmst.options)
-    up_streamtube = streamtube(a_up, ctx_up)
+    a_up, up_stats = _solve_streamtubes_uncoupled(ctx_up, dmst.momentum, dmst.options)
+    up_streamtube = evaluate_streamtube(a_up, ctx_up)
 
     U_wake = U_inf .* wake_velocity_ratio.(dmst.momentum, reverse(a_up))
     ctx_down = make_streamtube_context(
@@ -54,8 +49,8 @@ function solve(dmst::DMST)
         dmst.aerodynamics
     )
 
-    a_down, down_stats = _solve_per_streamtube(ctx_down, dmst.momentum, dmst.options)
-    down_streamtube = streamtube(a_down, ctx_down)
+    a_down, down_stats = _solve_streamtubes_uncoupled(ctx_down, dmst.momentum, dmst.options)
+    down_streamtube = evaluate_streamtube(a_down, ctx_down)
 
     stats = DMSTSolveStats(
         upstream = up_stats,
@@ -74,7 +69,7 @@ function solve(dmst::DMST)
     )
 end
 
-function _solve_per_streamtube(
+function _solve_streamtubes_uncoupled(
         ctx::StreamtubeContext,
         momentum::AbstractMomentumTheory,
         options::DMSTOptions
@@ -86,7 +81,9 @@ function _solve_per_streamtube(
     stats = UncoupledStreamtubeSolveStats(length(ctx.θ))
 
     for i in axes(ctx.θ, 1)
-        residual(u, _) = drag_coefficient(momentum, u) - _streamtube_thrust_coefficient(u, ctx, i)
+        residual(u, _) = (
+            drag_coefficient(momentum, u) - _evaluate_streamtube_thrust(u, ctx, i)
+        )
 
         prob = NonlinearSolve.NonlinearProblem(residual, current_u)
         sol = NonlinearSolve.solve(
@@ -97,7 +94,9 @@ function _solve_per_streamtube(
             maxiters = options.maxiters
         )
 
-        stats.converged[i] = NonlinearSolve.SciMLBase.successful_retcode(sol.retcode) && isfinite(sol.u)
+        stats.converged[i] = (
+            NonlinearSolve.SciMLBase.successful_retcode(sol.retcode) && isfinite(sol.u)
+        )
         stats.residual[i] = sol.resid
 
         # NOTE:NonlinearSolve.SimpleNewtonRaphson() returns `nothing` for sol.stats.
@@ -112,7 +111,7 @@ function _solve_per_streamtube(
 end
 
 """
-    streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics) -> DMSTOutput
+    evaluate_streamtube(a, θ, Δθ, U_in, turbine, environment, aerodynamics)
 
 Evaluate DMST quantities for a set of azimuthal collocation points.
 
@@ -128,19 +127,19 @@ contributions for a single streamtube evaluation (upstream or downstream).
 - `Δθ`: Azimuthal weights or interval sizes (rad), size-compatible with `θ`.
 - `U_in`: Incoming streamtube velocity used by the momentum balance (m/s).
 - `turbine`: Turbine model (Darrieus-type).
-- `ambient`: Environmental conditions (fluid and inflow).
+- `environment`: Environmental conditions (fluid and inflow).
 - `aerodynamics`: Section aerodynamics model.
 
 # Returns
 
-- [`DMSTOutput`](@ref) with field values evaluated at each `θ`.
+- [`DMSTStreamtubeOutput`](@ref) with field values evaluated at each `θ`.
 """
-function streamtube(a, θ, Δθ, U_in, turbine, ambient, aerodynamics)
-    ctx = make_streamtube_context(θ, Δθ, U_in, turbine, ambient, aerodynamics)
-    return streamtube(a, ctx)
+function evaluate_streamtube(a, θ, Δθ, U_in, turbine, environment, aerodynamics)
+    ctx = make_streamtube_context(θ, Δθ, U_in, turbine, environment, aerodynamics)
+    return evaluate_streamtube(a, ctx)
 end
 
-function streamtube(a, ctx::StreamtubeContext)
+function evaluate_streamtube(a, ctx::StreamtubeContext)
     U_r, aoa = _local_kinematics(a, ctx.U_in, ctx.ω, ctx.R, ctx.sinθ, ctx.cosθ)
     Re, Ma, Cl, Cd = _local_aerodynamics(
         U_r, aoa, ctx.c, ctx.ρ, ctx.μ, ctx.c_sound, ctx.aerodynamics, ctx.section
@@ -153,19 +152,19 @@ function streamtube(a, ctx::StreamtubeContext)
     Q, Cq = _section_torque(U_r, Ct, ctx.H, ctx.R, ctx.c, ctx.ρ)
     P, Cp = _section_power(Q, ctx.ω, ctx.H, ctx.R, ctx.ρ, ctx.U_inf, ctx.Δθ, ctx.B)
 
-    return DMSTOutput(
+    return DMSTStreamtubeOutput(
         a = a, θ = ctx.θ, U_r = U_r, aoa = aoa, Re = Re, Ma = Ma, Cl = Cl, Cd = Cd,
         Ct = Ct, Cn = Cn, Th = Th, Q = Q, P = P, Cth = Cth, Cq = Cq, Cp = Cp,
     )
 end
 
-function _streamtube_thrust_coefficient(a, ctx::StreamtubeContext, i::Int)
+function _evaluate_streamtube_thrust(a, ctx::StreamtubeContext, i::Int)
     U_in = _getindex(ctx.U_in, i)
 
     U_r, aoa = _local_kinematics(a, U_in, ctx.ω, ctx.R, ctx.sinθ[i], ctx.cosθ[i])
 
     # NOTE: Cl and Cd are one-sized vectors. Need to check this later and
-    # perhaps update NNFoil.jl
+    # perhaps update NNFoil.jl so that it handles scalar inputs properly.
     _, _, Cl, Cd = _local_aerodynamics(
         U_r, aoa, ctx.c, ctx.ρ, ctx.μ, ctx.c_sound, ctx.aerodynamics, ctx.section
     )

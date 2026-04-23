@@ -1,10 +1,10 @@
 """
-    DMSTOutput
+    DMSTStreamtubeOutput
 
-Container for DMST results.
+Container for streamtube output data.
 
-All fields are typically vectors (or matrices) evaluated at the grid
-collocation points used by the DMST discretization.
+Fields are typically vectors (or matrices) evaluated at the grid collocation
+points used by the DMST discretization.
 
 # Fields
 
@@ -27,17 +27,19 @@ collocation points used by the DMST discretization.
 
 # See also
 
-[`DMSTGrid`](@ref)
+[`DMSTSolution`](@ref)
 """
-@concrete struct DMSTOutput
+@concrete struct DMSTStreamtubeOutput
     a; θ; U_r; aoa; Re; Ma; Cl; Cd; Ct; Cn; Th; Q; P; Cth; Cq; Cp
 end
 
-function DMSTOutput(; a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Q, P, Cth, Cq, Cp)
-    return DMSTOutput(a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Q, P, Cth, Cq, Cp)
-end
+DMSTStreamtubeOutput(;
+    a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Q, P, Cth, Cq, Cp
+) = DMSTStreamtubeOutput(
+    a, θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Q, P, Cth, Cq, Cp
+)
 
-@define_cat_methods DMSTOutput
+@define_cat_methods DMSTStreamtubeOutput
 
 """
     DMSTSolution
@@ -46,18 +48,18 @@ Structured output of a full DMST solve.
 
 # Fields
 
-- `upstream<:DMSTOutput`: Upstream solution.
-- `downstream<:DMSTOutput`: Downstream solution.
+- `upstream<:DMSTStreamtubeOutput`: Upstream solution.
+- `downstream<:DMSTStreamtubeOutput`: Downstream solution.
 - `integrated`: Global quantities.
 - `stats<:DMSTSolveStats`: Solver diagnostics and convergence metadata.
 
 # See also
 
-[`DMSTOutput`](@ref), [`DMSTSolveStats`](@ref)
+[`DMSTStreamtubeOutput`](@ref), [`DMSTSolveStats`](@ref)
 """
 @concrete struct DMSTSolution
-    upstream <: DMSTOutput
-    downstream <: DMSTOutput
+    upstream <: DMSTStreamtubeOutput
+    downstream <: DMSTStreamtubeOutput
     integrated
     stats <: DMSTSolveStats
 end
@@ -73,7 +75,7 @@ DMSTSolution(;
 function Base.getproperty(sol::DMSTSolution, name::Symbol)
     if name in fieldnames(DMSTSolution)
         return getfield(sol, name)
-    elseif name in fieldnames(DMSTOutput)
+    elseif name in fieldnames(DMSTStreamtubeOutput)
         up = getproperty(getfield(sol, :upstream), name)
         dn = getproperty(getfield(sol, :downstream), name)
         return [up; dn]
@@ -85,5 +87,5 @@ end
 
 Base.propertynames(::DMSTSolution, private::Bool = false) = (
     fieldnames(DMSTSolution)...,
-    fieldnames(DMSTOutput)...,
+    fieldnames(DMSTStreamtubeOutput)...,
 )

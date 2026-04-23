@@ -10,7 +10,6 @@ Abstract supertype for momentum theory formulations.
 """
 abstract type AbstractMomentumTheory end
 
-# Treats subtypes as a scalar in broadcasting.
 Base.broadcastable(m::AbstractMomentumTheory) = Ref(m)
 
 """

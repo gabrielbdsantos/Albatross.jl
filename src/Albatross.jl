@@ -26,7 +26,7 @@ include("geometry/section.jl")
 include("geometry/blade.jl")
 
 include("turbine/turbine.jl")
-include("turbine/h-darrieus.jl")
+include("turbine/h_darrieus.jl")
 
 include("aerodynamics/aerodynamics.jl")
 

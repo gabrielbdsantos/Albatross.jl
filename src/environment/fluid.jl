@@ -19,7 +19,6 @@ thermodynamic and transport properties required by the aerodynamic solver.
 """
 abstract type AbstractFluid end
 
-# Treats subtypes as a scalar in broadcasting.
 Base.broadcastable(m::AbstractFluid) = Ref(m)
 
 """

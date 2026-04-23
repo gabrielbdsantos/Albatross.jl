@@ -66,8 +66,8 @@ end
     sol = solve(dmst)
 
     @test sol isa Albatross.DMSTSolution
-    @test sol.upstream isa Albatross.DMSTOutput
-    @test sol.downstream isa Albatross.DMSTOutput
+    @test sol.upstream isa Albatross.DMSTStreamtubeOutput
+    @test sol.downstream isa Albatross.DMSTStreamtubeOutput
     @test sol.stats isa Albatross.DMSTSolveStats
     @test sol.integrated === nothing
 

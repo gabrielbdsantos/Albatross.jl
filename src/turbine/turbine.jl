@@ -27,7 +27,6 @@ classical Darrieus and H-rotor configurations.
 """
 abstract type AbstractDarrieusTurbine <: AbstractTurbine end
 
-# Treats subtypes as a scalar in broadcasting.
 Base.broadcastable(m::AbstractDarrieusTurbine) = Ref(m)
 
 """

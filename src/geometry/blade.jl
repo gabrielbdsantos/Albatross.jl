@@ -14,7 +14,6 @@ geometry at a given spanwise coordinate.
 """
 abstract type AbstractBladeGeometry end
 
-# Treats subtypes as a scalar in broadcasting.
 Base.broadcastable(m::AbstractBladeGeometry) = Ref(m)
 
 # Required interface

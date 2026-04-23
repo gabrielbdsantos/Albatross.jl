@@ -22,7 +22,7 @@
     aerodynamics <: AbstractSectionAerodynamics
 end
 
-function make_streamtube_context(θ, Δθ, U_in, turbine, ambient, aerodynamics)
+function make_streamtube_context(θ, Δθ, U_in, turbine, environment, aerodynamics)
     z = nothing
     t = nothing
 
@@ -44,10 +44,10 @@ function make_streamtube_context(θ, Δθ, U_in, turbine, ambient, aerodynamics)
         chord(blade, z),
         radial_pos(blade, z),
         span(blade),
-        velocity(ambient.inflow),
-        density(ambient.fluid),
-        viscosity(ambient.fluid),
-        speed_of_sound(ambient.fluid),
+        velocity(environment.inflow),
+        density(environment.fluid),
+        viscosity(environment.fluid),
+        speed_of_sound(environment.fluid),
         num_blades(turbine),
         1,
         blade_section,

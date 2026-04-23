@@ -8,18 +8,18 @@ aerodynamics at a given blade section ([`AbstractBladeSection`](@ref)).
 
 # Fields
 
-- `alpha`: Angle of attack (rad). Positive by the airfoil convention used by
+- `aoa`: Angle of attack (rad). Positive by the airfoil convention used by
   the section model.
 - `Re`: Reynolds number based on local relative speed and chord (–).
-- `Mach`: Mach number based on local relative speed and speed of sound (–).
+- `Ma`: Mach number based on local relative speed and speed of sound (–).
 """
 @concrete struct LocalFlowState
-    alpha
+    aoa
     Re
-    Mach
+    Ma
 end
 
-LocalFlowState(; alpha, Re, Mach) = LocalFlowState(alpha, Re, Mach)
+LocalFlowState(; aoa, Re, Ma) = LocalFlowState(aoa, Re, Ma)
 
 @define_cat_methods LocalFlowState
 
@@ -65,7 +65,6 @@ state and a blade section description to 2D aerodynamic coefficients.
 """
 abstract type AbstractSectionAerodynamics end
 
-# Treats subtypes as a scalar in broadcasting.
 Base.broadcastable(m::AbstractSectionAerodynamics) = Ref(m)
 
 """
@@ -100,7 +99,7 @@ of airfoil shape, angle of attack, and Reynolds number.
 
 # Notes
 
-Angles are provided to the backend in degrees. `Mach` is currently not used by
+Angles are provided to the backend in degrees. `Ma` is currently not used by
 this model, and `use_deep_stall` is currently not applied in backend
 evaluation. Both are retained for future extensions.
 """
@@ -154,7 +153,7 @@ function aerodynamic_coefficients(
     x = NNFoil.evaluate(
         model.network_parameters,
         shape(section),
-        rad2deg.(state.alpha),
+        rad2deg.(state.aoa),
         state.Re;
         n_crit = model.n_crit,
         xtr_upper = model.xtr_upper,
