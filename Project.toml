@@ -12,12 +12,12 @@ NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
 
 [sources]
 ConcreteStructs = {rev = "main", url = "https://github.com/gabrielbdsantos/ConcreteStructs.jl"}
-NNFoil = {rev = "v0.2.0", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}
+NNFoil = {rev = "v0.3.2", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}
 
 [compat]
-julia = "1.11"
 ConcreteStructs = "0.2.5"
 FillArrays = "1.16.0"
 LinearAlgebra = "1.11.0"
-NNFoil = "0.2.0"
+NNFoil = "0.3.2"
 NonlinearSolve = "4.15.0"
+julia = "1.11"

@@ -5,4 +5,4 @@ NNFoil = "5d96e3f7-5e7b-44ae-828e-526bf7f0e78d"
 
 [sources]
 Albatross = {path = "../"}
-NNFoil = {rev = "v0.2.0", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}
+NNFoil = {rev = "v0.3.2", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}

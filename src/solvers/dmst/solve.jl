@@ -168,7 +168,7 @@ function _evaluate_streamtube_thrust(a, ctx::StreamtubeContext, i::Int)
     _, _, Cl, Cd = _local_aerodynamics(
         U_r, aoa, ctx.c, ctx.ρ, ctx.μ, ctx.c_sound, ctx.aerodynamics, ctx.section
     )
-    Ct, Cn = _section_force_coefficients(aoa, Cl[1], Cd[1])
+    Ct, Cn = _section_force_coefficients(aoa, Cl, Cd)
     _, Cth = _section_thrust(
         U_r, U_in, Ct, Cn, ctx.B, ctx.H, ctx.R, ctx.c, ctx.ρ,
         ctx.Δθ[i], ctx.sinθ[i], ctx.cosθ[i], ctx.abs_sinθ[i]
