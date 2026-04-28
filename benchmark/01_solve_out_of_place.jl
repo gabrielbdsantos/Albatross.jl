@@ -39,8 +39,12 @@ function make_case()
     )
 end
 
-dmst = make_case()
-
-benchmark = @benchmarkable(solve($dmst), evals = 1, samples = 100, seconds = 60.0)
+benchmark = @benchmarkable(
+    solve(dmst),
+    setup = (dmst = make_case()),
+    evals = 1,
+    samples = 100,
+    seconds = 60.0
+)
 
 run_or_return(benchmark)
