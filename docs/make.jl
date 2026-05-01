@@ -1,5 +1,6 @@
 using Albatross
 using Documenter
+using DocumenterCitations
 
 DocMeta.setdocmeta!(Albatross, :DocTestSetup, :(using Albatross); recursive = true)
 
@@ -11,10 +12,17 @@ makedocs(;
         canonical = "https://gabrielbdsantos.github.io/Albatross.jl",
         edit_link = "main",
         prettyurls = get(ENV, "CI", nothing) == "true",
-        assets = ["assets/custom.css"],
+        assets = String[
+            "assets/custom.css",
+            "assets/citations.css",
+        ],
     ),
+    plugins = [
+        CitationBibliography(joinpath(@__DIR__, "src", "references.bib"))
+    ],
     pages = [
         "Home" => "index.md",
+        "References" => "references.md",
     ],
 )
 
