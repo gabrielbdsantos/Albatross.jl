@@ -35,6 +35,10 @@ instructions below are intended for developers and early adopters only.
     julia> Pkg.instantiate()
     ```
 
+For usage examples see the
+[`examples/`](https://github.com/gabrielbdsantos/Albatross.jl/tree/main/examples)
+directory.
+
 ## License
 
 Albatross.jl is released under the terms of the MIT license. See the

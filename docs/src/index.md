@@ -27,3 +27,7 @@ instructions below are intended for developers and early adopters only.
    julia> Pkg.activate(".")
    julia> Pkg.instantiate()
    ```
+
+For usage examples see the
+[`examples/`](https://github.com/gabrielbdsantos/Albatross.jl/tree/main/examples)
+directory.
