@@ -1,55 +1,55 @@
-"""
-    LocalFlowState
-
-Local aerodynamic state seen by a blade section.
-
-This type bundles the nondimensional quantities that parameterize 2D airfoil
-aerodynamics at a given blade section ([`AbstractBladeSection`](@ref)).
-
-# Fields
-
-- `aoa`: Angle of attack (rad). Positive by the airfoil convention used by
-  the section model.
-- `Re`: Reynolds number based on local relative speed and chord (–).
-- `Ma`: Mach number based on local relative speed and speed of sound (–).
-"""
-@concrete struct LocalFlowState
-    aoa
-    Re
-    Ma
-end
-
-LocalFlowState(; aoa, Re, Ma) = LocalFlowState(aoa, Re, Ma)
-
-@define_cat_methods LocalFlowState
-
-"""
-    AerodynamicCoefficients
-
-Aerodynamic coefficients of a 2D blade section in airfoil axes.
-
-# Fields
-
-- `Cl`: Lift coefficient (-).
-- `Cd`: Drag coefficient (-).
-- `Cm`: Pitching-moment coefficient (-), about the reference point implied by
-  the section model (commonly quarter-chord).
-
-# Notes
-
-These coefficients are expressed in the airfoil's reference frame. Force
-coefficients in the rotor's reference frame (e.g. normal/tangential) should be
-computed separately using the local kinematics and angle of attack.
-"""
-@concrete struct AerodynamicCoefficients
-    Cl
-    Cd
-    Cm
-end
-
-AerodynamicCoefficients(; Cl, Cd, Cm) = AerodynamicCoefficients(Cl, Cd, Cm)
-
-@define_cat_methods AerodynamicCoefficients
+# """
+#     LocalFlowState
+#
+# Local aerodynamic state seen by a blade section.
+#
+# This type bundles the nondimensional quantities that parameterize 2D airfoil
+# aerodynamics at a given blade section ([`AbstractBladeSection`](@ref)).
+#
+# # Fields
+#
+# - `aoa`: Angle of attack (rad). Positive by the airfoil convention used by
+#   the section model.
+# - `Re`: Reynolds number based on local relative speed and chord (–).
+# - `Ma`: Mach number based on local relative speed and speed of sound (–).
+# """
+# @concrete struct LocalFlowState
+#     aoa
+#     Re
+#     Ma
+# end
+#
+# LocalFlowState(; aoa, Re, Ma) = LocalFlowState(aoa, Re, Ma)
+#
+# @define_cat_methods LocalFlowState
+#
+# """
+#     AerodynamicCoefficients
+#
+# Aerodynamic coefficients of a 2D blade section in airfoil axes.
+#
+# # Fields
+#
+# - `Cl`: Lift coefficient (-).
+# - `Cd`: Drag coefficient (-).
+# - `Cm`: Pitching-moment coefficient (-), about the reference point implied by
+#   the section model (commonly quarter-chord).
+#
+# # Notes
+#
+# These coefficients are expressed in the airfoil's reference frame. Force
+# coefficients in the rotor's reference frame (e.g. normal/tangential) should be
+# computed separately using the local kinematics and angle of attack.
+# """
+# @concrete struct AerodynamicCoefficients
+#     Cl
+#     Cd
+#     Cm
+# end
+#
+# AerodynamicCoefficients(; Cl, Cd, Cm) = AerodynamicCoefficients(Cl, Cd, Cm)
+#
+# @define_cat_methods AerodynamicCoefficients
 
 """
     AbstractSectionAerodynamics
@@ -145,19 +145,36 @@ function NeuralSectionAerodynamics(;
     )
 end
 
+# function aerodynamic_coefficients(
+#         model::NeuralSectionAerodynamics,
+#         state::LocalFlowState,
+#         section::AbstractBladeSection
+#     )
+#     x = NNFoil.evaluate(
+#         model.network_parameters,
+#         shape(section),
+#         rad2deg.(state.aoa),
+#         state.Re;
+#         n_crit = model.n_crit,
+#         xtr_upper = model.xtr_upper,
+#         xtr_lower = model.xtr_lower,
+#     )
+#     return AerodynamicCoefficients(x.CL, x.CD, x.CM)
+# end
 function aerodynamic_coefficients(
         model::NeuralSectionAerodynamics,
-        state::LocalFlowState,
-        section::AbstractBladeSection
+        section::AbstractBladeSection,
+        aoa_deg,
+        Re
     )
     x = NNFoil.evaluate(
         model.network_parameters,
         shape(section),
-        rad2deg.(state.aoa),
-        state.Re;
+        aoa_deg,
+        Re;
         n_crit = model.n_crit,
         xtr_upper = model.xtr_upper,
         xtr_lower = model.xtr_lower,
     )
-    return AerodynamicCoefficients(x.CL, x.CD, x.CM)
+    return x.CL, x.CD
 end

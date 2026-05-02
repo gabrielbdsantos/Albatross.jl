@@ -66,8 +66,8 @@ export
     UniformBladeHDarrieus,
 
     # Aerodynamics
-    LocalFlowState,
-    AerodynamicCoefficients,
+    # LocalFlowState,
+    # AerodynamicCoefficients,
     AbstractSectionAerodynamics,
     NeuralSectionAerodynamics,
 

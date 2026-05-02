@@ -13,11 +13,9 @@ end
 function _local_aerodynamics(U_r, aoa, c, ρ, μ, c_sound, model, blade_section)
     Re = @. ρ * U_r * c / μ
     Ma = @. U_r / c_sound
-    flow_state = LocalFlowState(aoa, Re, Ma)
+    Cl, Cd = aerodynamic_coefficients(model, blade_section, rad2deg.(aoa), Re)
 
-    aero_coeffs = aerodynamic_coefficients(model, flow_state, blade_section)
-
-    return Re, Ma, aero_coeffs.Cl, aero_coeffs.Cd
+    return (; Re, Ma, Cl, Cd)
 end
 
 function _section_force_coefficients(aoa, Cl, Cd)
