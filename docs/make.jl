@@ -18,10 +18,14 @@ makedocs(;
         ],
     ),
     plugins = [
-        CitationBibliography(joinpath(@__DIR__, "src", "references.bib"))
+        CitationBibliography(
+            joinpath(@__DIR__, "src", "references.bib");
+            style = :authoryear
+        )
     ],
     pages = [
         "Home" => "index.md",
+        "Public API" => "public-api.md",
         "References" => "references.md",
     ],
 )

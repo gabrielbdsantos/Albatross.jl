@@ -8,11 +8,11 @@ together with quadrature weights associated with each point.
 
 # Interface methods
 
-- [`Base.length`](@ref): number of points
+- `Base.length(grid)`: number of points
 - [`bounds`](@ref): lower/upper bounds of the grid domain
 - [`extent`](@ref): domain length
-- [`points(grid)`](@ref): vector of point locations (typically cell centers)
-- [`weights(grid)`](@ref): vector of quadrature weights (typically cell widths)
+- [`points`](@ref): vector of point locations (typically cell centers)
+- [`weights`](@ref): vector of quadrature weights (typically cell widths)
 
 The conventions for whether points represent nodes or cell-centers are
 grid-specific and must be documented by each concrete grid type.
@@ -27,6 +27,34 @@ Abstract supertype for one-dimensional grid definitions.
 See [`AbstractGrid`](@ref) for the expected interface.
 """
 abstract type AbstractGrid1D <: AbstractGrid end
+
+"""
+    bounds(grid)
+
+Return lower and upper bounds of the grid domain.
+"""
+function bounds end
+
+"""
+    extent(grid)
+
+Return the domain length covered by `grid`.
+"""
+function extent end
+
+"""
+    points(grid)
+
+Return collocation point locations used by `grid`.
+"""
+function points end
+
+"""
+    weights(grid)
+
+Return quadrature weights associated with `points(grid)`.
+"""
+function weights end
 
 """
     UniformGrid1D <: AbstractGrid1D
@@ -56,13 +84,14 @@ equal to `Δx`.
     """
         UniformGrid1D(n, bounds)
 
-    Create a uniform, cell-centered grid over the interval `bounds = (x0, xL)` by
-    dividing it into `n` equal cells.
+    Create a uniform, cell-centered grid over the interval `bounds = (x0, xL)`
+    by dividing it into `n` equal cells.
 
     # Arguments
 
     - `n::Integer`: number of points (must be positive)
-    - `bounds::Tuple{<:Real, <:Real}`: interval endpoints `(x0, xL)` with `xL > x0`
+    - `bounds::Tuple{<:Real, <:Real}`: interval endpoints `(x0, xL)` with
+      `xL > x0`
 
     # Throws
 

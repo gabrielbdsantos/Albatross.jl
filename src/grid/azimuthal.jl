@@ -40,14 +40,14 @@ Both halves use `n` equally-sized cells, so the full grid has `2n` points.
 
     Create a uniform, cell-centered azimuthal grid over `(ψ₀, ψ₀ + 2π)`.
 
-    Each half-cycle has `n` cells, so the full grid has `2n` points. The quadrature
-    weights are constant with `Δψ = π/n`.
+    Each half-cycle has `n` cells, so the full grid has `2n` points.
+    The quadrature weights are constant with `Δψ = π/n`.
 
     # Arguments
 
     - `n::Integer`: number of cells per half-cycle (must be positive)
 
-    # Keyword arguments
+    # Keyword Arguments
 
     - `ψ₀::Real`: azimuth at the start of the upstream half-cycle
     """

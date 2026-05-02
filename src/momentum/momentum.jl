@@ -17,8 +17,6 @@ Base.broadcastable(m::AbstractMomentumTheory) = Ref(m)
 
 Wake axial velocity ratio as a function of the axial induction factor `a`.
 
-This method is part of the [`AbstractMomentumTheory`](@ref) interface.
-
 # Arguments
 
 - `model::AbstractMomentumTheory`: Momentum theory formulation.
@@ -31,8 +29,6 @@ function wake_velocity_ratio end
 
 Actuator-disk drag coefficient predicted by the momentum formulation `model`
 for an induction factor `a`.
-
-This method is part of the [`AbstractMomentumTheory`](@ref) interface.
 
 # Arguments
 

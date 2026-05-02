@@ -76,8 +76,8 @@ Base.broadcastable(m::AbstractSectionAerodynamics) = Ref(m)
 
 Return aerodynamic coefficients for `section` under the local `state`.
 
-Concrete models must implement this method and return an
-[`AerodynamicCoefficients`](@ref) instance.
+Concrete models must implement this method and return aerodynamic
+coefficients compatible with downstream solver usage.
 """
 function aerodynamic_coefficients end
 
@@ -123,7 +123,7 @@ end
 Construct a [`NeuralSectionAerodynamics`](@ref) model with a predefined network
 size and auxiliary parameters.
 
-# Keyword arguments
+# Keyword Arguments
 
 - `model_size`: Network capacity preset (passed to `NeuralNetworkParameters`).
 - `n_crit`: e^N critical amplification factor (backend-dependent).

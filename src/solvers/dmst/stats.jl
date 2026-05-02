@@ -1,3 +1,8 @@
+"""
+    AbstractStreamtubeSolveStats
+
+Abstract supertype for DMST streamtube solve diagnostics.
+"""
 abstract type AbstractStreamtubeSolveStats end
 
 """
