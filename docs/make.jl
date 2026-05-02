@@ -11,7 +11,7 @@ makedocs(;
         canonical = "https://gabrielbdsantos.github.io/Albatross.jl",
         edit_link = "main",
         prettyurls = get(ENV, "CI", nothing) == "true",
-        assets = String[],
+        assets = ["assets/custom.css"],
     ),
     pages = [
         "Home" => "index.md",
