@@ -78,7 +78,7 @@ function _solve_streamtubes_uncoupled(
     a_min, a_max = options.induction_bounds
     current_u = zero(_getindex(ctx.θ, 1))
 
-    stats = UncoupledStreamtubeSolveStats(length(ctx.θ))
+    stats = StreamtubeSolveStats(length(ctx.θ))
 
     for i in axes(ctx.θ, 1)
         residual(u, _) = (

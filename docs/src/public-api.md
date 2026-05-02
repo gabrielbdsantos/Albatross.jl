@@ -101,15 +101,13 @@ evaluate_streamtube
 ## DMST
 
 ```@docs
-AbstractStreamtubeSolveStats
-CoupledStreamtubeSolveStats
-UncoupledStreamtubeSolveStats
 DMST
 DMSTGrid
 DMSTOptions
 DMSTStreamtubeOutput
 DMSTSolveStats
 DMSTSolution
+StreamtubeSolveStats
 ```
 
 ## Utilities

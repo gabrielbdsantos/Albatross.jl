@@ -71,8 +71,8 @@ end
     @test sol.stats isa Albatross.DMSTSolveStats
     @test sol.integrated === nothing
 
-    @test sol.stats.upstream isa Albatross.UncoupledStreamtubeSolveStats
-    @test sol.stats.downstream isa Albatross.UncoupledStreamtubeSolveStats
+    @test sol.stats.upstream isa Albatross.StreamtubeSolveStats
+    @test sol.stats.downstream isa Albatross.StreamtubeSolveStats
     @test all(sol.stats.upstream.converged)
     @test all(sol.stats.downstream.converged)
     @test all(isfinite, sol.stats.upstream.residual)
