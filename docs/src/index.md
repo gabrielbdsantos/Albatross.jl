@@ -8,14 +8,22 @@ wind turbines.
     This project is under active development. Breaking changes may occur at any
     time, and backward compatibility is not guaranteed until a stable release.
 
-## Quick Install
+## Developer Installation
 
-Albatross is not yet a registered Julia package. To install it,
+Albatross is in active development and its API is not yet stable. The
+instructions below are intended for developers and early adopters only.
 
 1. Download [Julia](https://julialang.org/downloads/) version 1.11 or later.
-1. Launch Julia and type
+1. Clone the repository
 
-   ```julia
-   import Pkg
-   Pkg.add("https://github.com/gabrielbdsantos/Albatross.jl.git")
-   ```
+    ```sh
+    git clone https://github.com/gabrielbdsantos/Albatross.jl
+    ```
+
+1. Enter the repository, launch Julia, and type
+
+    ```julia-repl
+    julia> import Pkg
+    julia> Pkg.activate(".")
+    julia> Pkg.instantiate()
+    ```
