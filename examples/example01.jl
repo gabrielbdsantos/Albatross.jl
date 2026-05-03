@@ -43,3 +43,4 @@ options = DMSTSolverOptions()
 dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options)
 
 solution = solve(dmst)
+solution_fields = evaluate_aerodynamic_fields(solution)

@@ -65,76 +65,80 @@ end
 
     sol = solve(dmst)
 
-    @test sol isa Albatross.DMSTSolution
-    @test sol.upstream isa Albatross.DMSTStreamtubeOutput
-    @test sol.downstream isa Albatross.DMSTStreamtubeOutput
-    @test sol.stats isa Albatross.DMSTSolveStats
-    @test sol.integrated === nothing
+    @test sol isa Albatross.DMSTNonlinearSolution
+    @test sol.a_up isa AbstractVector
+    @test sol.a_down isa AbstractVector
+    @test sol.ctx_up isa Albatross.StreamtubeContext
+    @test sol.ctx_down isa Albatross.StreamtubeContext
+    @test sol.stats_up isa AbstractVector{<:Albatross.DMSTSolveStats}
+    @test sol.stats_down isa AbstractVector{<:Albatross.DMSTSolveStats}
 
-    @test sol.stats.upstream isa Albatross.StreamtubeSolveStats
-    @test sol.stats.downstream isa Albatross.StreamtubeSolveStats
-    @test all(sol.stats.upstream.converged)
-    @test all(sol.stats.downstream.converged)
-    @test all(isfinite, sol.stats.upstream.residual)
-    @test all(isfinite, sol.stats.downstream.residual)
-    @test sol.stats.coupling_iters == 0
-    @test sol.stats.coupling_converged
+    @test all(sol.stats_up.converged)
+    @test all(sol.stats_down.converged)
+    @test all(isfinite, sol.stats_up.residual)
+    @test all(isfinite, sol.stats_down.residual)
 
     nup = length(dmst.grid.azimuthal.upstream)
     ndn = length(dmst.grid.azimuthal.downstream)
     nexpected = nup + ndn
 
-    @test length(sol.stats.upstream.converged) == nup
-    @test length(sol.stats.upstream.residual) == nup
-    @test length(sol.stats.upstream.num_iters) == nup
-    @test length(sol.stats.upstream.elapsed_time) == nup
+    @test length(sol.stats_up.converged) == nup
+    @test length(sol.stats_up.residual) == nup
+    @test length(sol.stats_up.num_iters) == nup
+    @test length(sol.stats_up.elapsed_time) == nup
 
-    @test length(sol.stats.downstream.converged) == ndn
-    @test length(sol.stats.downstream.residual) == ndn
-    @test length(sol.stats.downstream.num_iters) == ndn
-    @test length(sol.stats.downstream.elapsed_time) == ndn
+    @test length(sol.stats_down.converged) == ndn
+    @test length(sol.stats_down.residual) == ndn
+    @test length(sol.stats_down.num_iters) == ndn
+    @test length(sol.stats_down.elapsed_time) == ndn
 
-    @test length(sol.upstream.a) == nup
-    @test length(sol.downstream.a) == ndn
+    @test length(sol.a_up) == nup
+    @test length(sol.a_down) == ndn
 
-    # Keep these legacy tests for now
-    @test length(sol.a) == nexpected
-    @test length(sol.θ) == nexpected
-    @test length(sol.Cth) == nexpected
-    @test length(sol.Cp) == nexpected
+    @test all(0.0 .<= sol.a_up .<= 1.0)
+    @test all(0.0 .<= sol.a_down .<= 1.0)
 
-    @test all(isfinite, sol.a)
-    @test all(isfinite, sol.Cth)
-    @test all(isfinite, sol.Cp)
+    aero_fields = evaluate_aerodynamic_fields(sol)
 
-    @test all(-1.0 .<= sol.a .<= 1.0)
+    @test length(aero_fields.a) == nexpected
+    @test length(aero_fields.θ) == nexpected
+    @test length(aero_fields.Cth) == nexpected
+    @test length(aero_fields.Cp) == nexpected
+
+    @test all(isfinite, aero_fields.a)
+    @test all(isfinite, aero_fields.Cth)
+    @test all(isfinite, aero_fields.Cp)
 end
 
 @testset "Momentum model -- $M" for M in subtypes(AbstractMomentumTheory)
     dmst = make_dmst_case(; momentum = M())
     sol = solve(dmst)
+    aero_fields = evaluate_aerodynamic_fields(sol)
 
-    @test all(isfinite, sol.a)
-    @test all(isfinite, sol.Cth)
-    @test all(isfinite, sol.Cp)
+    @test all(isfinite, aero_fields.a)
+    @test all(isfinite, aero_fields.Cth)
+    @test all(isfinite, aero_fields.Cp)
 end
 
 @testset "Fallback on non-converged streamtubes" begin
     dmst = make_dmst_case(; options = DMSTSolverOptions(maxiters = 1))
     sol = solve(dmst)
+    aero_fields = evaluate_aerodynamic_fields(sol)
 
-    @test any(.!sol.stats.upstream.converged) || any(.!sol.stats.downstream.converged)
-    @test all(isfinite, sol.a)
-    @test all(isfinite, sol.Cth)
-    @test all(isfinite, sol.Cp)
+    @test any(.!sol.stats_up.converged) || any(.!sol.stats_down.converged)
+
+    for field in fieldnames(DMSTStreamtubeFields)
+        @test all(isfinite, getproperty(aero_fields, field))
+    end
 end
 
 @testset "Converged solution respects induction bounds" begin
     lo, hi = 0.05, 0.2
     dmst = make_dmst_case(; options = DMSTSolverOptions(induction_bounds = (lo, hi)))
     sol = solve(dmst)
+    aero_fields = evaluate_aerodynamic_fields(sol)
 
-    @test all((lo .<= sol.a) .& (sol.a .<= hi))
+    @test all((lo .<= aero_fields.a) .& (aero_fields.a .<= hi))
 end
 
 @testset "Fallback solution respects induction bounds" begin
@@ -143,9 +147,10 @@ end
         options = DMSTSolverOptions(maxiters = 1, induction_bounds = (lo, hi))
     )
     sol = solve(dmst)
+    aero_fields = evaluate_aerodynamic_fields(sol)
 
-    @test any(.!sol.stats.upstream.converged) || any(.!sol.stats.downstream.converged)
-    @test all((lo .<= sol.a) .& (sol.a .<= hi))
+    @test any(.!sol.stats_up.converged) || any(.!sol.stats_down.converged)
+    @test all((lo .<= aero_fields.a) .& (aero_fields.a .<= hi))
 end
 
 @testset "Repeatability" begin
@@ -154,16 +159,23 @@ end
     sol1 = solve(dmst)
     sol2 = solve(dmst)
 
-    @test sol1.a ≈ sol2.a
-    @test sol1.Cth ≈ sol2.Cth
-    @test sol1.Cp ≈ sol2.Cp
+    @test sol1.a_up ≈ sol2.a_up
+    @test sol1.a_down ≈ sol2.a_down
+
+    aero_fields1 = evaluate_aerodynamic_fields(sol1)
+    aero_fields2 = evaluate_aerodynamic_fields(sol2)
+
+    for field in fieldnames(DMSTStreamtubeFields)
+        @test getproperty(aero_fields1, field) ≈ getproperty(aero_fields2, field)
+    end
 end
 
 @testset "Solution regression" begin
     dmst = make_dmst_case()
     sol = solve(dmst)
+    aero_fields = evaluate_aerodynamic_fields(sol)
 
-    @test sol.a ≈ DMST_SNAPSHOT.a
-    @test sol.Cth ≈ DMST_SNAPSHOT.Cth
-    @test sol.Cp ≈ DMST_SNAPSHOT.Cp
+    @test aero_fields.a ≈ DMST_SNAPSHOT.a
+    @test aero_fields.Cth ≈ DMST_SNAPSHOT.Cth
+    @test aero_fields.Cp ≈ DMST_SNAPSHOT.Cp
 end

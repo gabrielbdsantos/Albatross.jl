@@ -1,6 +1,7 @@
 include("setup.jl")
 include("stats.jl")
-include("outputs.jl")
 include("runtime.jl")
+include("outputs.jl")
 include("kernels.jl")
+include("postprocess.jl")
 include("solve.jl")
