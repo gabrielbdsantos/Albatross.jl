@@ -16,23 +16,6 @@ Diagnostics for a half-pass nonlinear solution.
     num_iters
     elapsed_time
 
-    # function StreamtubeSolveStats(
-    #         converged::AbstractVector{<:Bool},
-    #         residual::AbstractVector{<:Real},
-    #         num_iters::AbstractVector{<:Integer},
-    #         elapsed_time::AbstractVector{<:Real}
-    #     )
-    #     length(converged) == length(residual) == length(num_iters) ==
-    #         length(elapsed_time) || throw(
-    #         DimensionMismatch("All fields must have the same size.")
-    #     )
-    #
-    #     return new{
-    #         typeof(converged), typeof(residual), typeof(num_iters),
-    #         typeof(elapsed_time),
-    #     }(converged, residual, num_iters, elapsed_time)
-    # end
-
     StreamtubeSolveStats(n::Int) = StreamtubeSolveStats(
         falses(n), fill(Inf, n), zeros(Int, n), zeros(n)
     )

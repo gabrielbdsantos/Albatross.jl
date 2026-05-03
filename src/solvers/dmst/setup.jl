@@ -22,45 +22,33 @@ end
 DMSTGrid(; azimuthal, spanwise) = DMSTGrid(azimuthal, spanwise)
 
 """
-    DMSTOptions
+    DMSTSolverOptions
 
-Numerical controls for the DMST solver.
+Numerical controls for the nonlinear solver in DMST.
 
 # Fields
 
+- `algorithm`: Nonlinear solve algorithm.
 - `abstol`: Absolute tolerance for nonlinear residual convergence.
 - `reltol`: Relative tolerance for nonlinear residual convergence.
 - `maxiters`: Maximum nonlinear iterations per solve stage.
-- `induction_bounds`: Allowed induction-factor interval `(a_min, a_max)`.
-- `damping`: Generic damping/relaxation factor (0, 1].
-- `enable_coupling`: Enable upstream/downstream outer coupling iterations.
-- `coupling_maxiters`: Max outer iterations for upstream/downstream coupling.
-- `coupling_tol`: Absolute tolerance for coupling convergence.
+- `solution_bounds`: Allowed induction-factor interval `(u_min, u_max)`.
 """
-@concrete struct DMSTOptions
+@concrete struct DMSTSolverOptions
+    algorithm <: NonlinearSolve.NonlinearSolveBase.AbstractNonlinearSolveAlgorithm
     abstol <: Real
     reltol <: Real
     maxiters <: Integer
-    induction_bounds <: Tuple{<:Real, <:Real}
-    damping <: Real
-    enable_coupling <: Bool
-    coupling_maxiters <: Integer
-    coupling_tol <: Real
+    solution_bounds <: Tuple{<:Real, <:Real}
 end
 
-DMSTOptions(;
+DMSTSolverOptions(;
+    algorithm = NonlinearSolve.SimpleBroyden(),
     abstol = 1.0e-8,
     reltol = 1.0e-8,
     maxiters = 100,
     induction_bounds = (-Inf, Inf),
-    damping = 1.0,
-    enable_coupling = false,
-    coupling_maxiters = 1,
-    coupling_tol = 1.0e-8,
-) = DMSTOptions(
-    abstol, reltol, maxiters, induction_bounds, damping, enable_coupling,
-    coupling_maxiters, coupling_tol
-)
+) = DMSTSolverOptions(algorithm, abstol, reltol, maxiters, induction_bounds)
 
 """
     DMST <: AbstractSolver
@@ -89,12 +77,12 @@ half-rotations.
   returning airfoil coefficients.
 - `grid<:DMSTGrid`: DMST grid definition (azimuthal and spanwise points and
     weights).
-- `options<:DMSTOptions`: Numerical controls for convergence tolerances,
+- `options<:DMSTSolverOptions`: Numerical controls for convergence tolerances,
     iteration limits, induction bounds, damping, and coupling settings.
 
 # See also
 
-[`DMSTGrid`](@ref), [`DMSTOptions`](@ref)
+[`DMSTGrid`](@ref), [`DMSTSolverOptions`](@ref)
 """
 @concrete struct DMST <: AbstractSolver
     turbine <: AbstractDarrieusTurbine
@@ -102,9 +90,9 @@ half-rotations.
     momentum <: AbstractMomentumTheory
     aerodynamics <: AbstractSectionAerodynamics
     grid <: DMSTGrid
-    options <: DMSTOptions
+    options <: DMSTSolverOptions
 end
 
 DMST(;
-    turbine, environment, momentum, aerodynamics, grid, options = DMSTOptions()
+    turbine, environment, momentum, aerodynamics, grid, options = DMSTSolverOptions()
 ) = DMST(turbine, environment, momentum, aerodynamics, grid, options)

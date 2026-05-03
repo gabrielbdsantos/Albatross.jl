@@ -57,7 +57,7 @@ function solve(dmst::DMST)
         downstream = down_stats,
         coupling_iters = 0,
         coupling_residual = Inf,
-        coupling_converged = !dmst.options.enable_coupling,
+        coupling_converged = true,
         elapsed_time = 0.0
     )
 
@@ -72,10 +72,10 @@ end
 function _solve_streamtubes_uncoupled(
         ctx::StreamtubeContext,
         momentum::AbstractMomentumTheory,
-        options::DMSTOptions
+        options::DMSTSolverOptions
     )
     a = similar(ctx.θ)
-    a_min, a_max = options.induction_bounds
+    a_min, a_max = options.solution_bounds
     current_u = zero(_getindex(ctx.θ, 1))
 
     stats = StreamtubeSolveStats(length(ctx.θ))
@@ -88,7 +88,7 @@ function _solve_streamtubes_uncoupled(
         prob = NonlinearSolve.NonlinearProblem(residual, current_u)
         sol = NonlinearSolve.solve(
             prob,
-            NonlinearSolve.SimpleNewtonRaphson();
+            alg = options.algorithm,
             abstol = options.abstol,
             reltol = options.reltol,
             maxiters = options.maxiters

@@ -38,7 +38,7 @@ grid = DMSTGrid(
     spanwise = UniformSpanwiseGrid(turbine, 1)
 )
 
-options = DMSTOptions()
+options = DMSTSolverOptions()
 
 dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options)
 

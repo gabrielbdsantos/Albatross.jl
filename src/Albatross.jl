@@ -87,7 +87,7 @@ export
     ## DMST
     DMST,
     DMSTGrid,
-    DMSTOptions,
+    DMSTSolverOptions,
     DMSTSolveStats,
     DMSTSolution
 

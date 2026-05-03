@@ -70,11 +70,12 @@ Base.broadcastable(m::AbstractSectionAerodynamics) = Ref(m)
 """
     aerodynamic_coefficients(
         model::AbstractSectionAerodynamics,
-        state::LocalFlowState,
-        section::AbstractBladeSection
+        section::AbstractBladeSection,
+        aoa_deg,
+        Re
     )
 
-Return aerodynamic coefficients for `section` under the local `state`.
+Return aerodynamic coefficients for `section` under the local flow conditions.
 
 Concrete models must implement this method and return aerodynamic
 coefficients compatible with downstream solver usage.

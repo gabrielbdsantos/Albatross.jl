@@ -103,8 +103,8 @@ evaluate_streamtube
 ```@docs
 DMST
 DMSTGrid
-DMSTOptions
 DMSTStreamtubeOutput
+DMSTSolverOptions
 DMSTSolveStats
 DMSTSolution
 StreamtubeSolveStats

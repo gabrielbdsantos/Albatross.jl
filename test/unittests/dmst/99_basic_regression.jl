@@ -17,7 +17,7 @@ end
 
 function make_dmst_case(;
         momentum = RankineFroude(),
-        options = DMSTOptions()
+        options = DMSTSolverOptions()
     )
     environment = EnvironmentConditions(
         ConstantPropertyFluid(),
@@ -120,7 +120,7 @@ end
 end
 
 @testset "Fallback on non-converged streamtubes" begin
-    dmst = make_dmst_case(; options = DMSTOptions(maxiters = 1))
+    dmst = make_dmst_case(; options = DMSTSolverOptions(maxiters = 1))
     sol = solve(dmst)
 
     @test any(.!sol.stats.upstream.converged) || any(.!sol.stats.downstream.converged)
@@ -131,7 +131,7 @@ end
 
 @testset "Converged solution respects induction bounds" begin
     lo, hi = 0.05, 0.2
-    dmst = make_dmst_case(; options = DMSTOptions(induction_bounds = (lo, hi)))
+    dmst = make_dmst_case(; options = DMSTSolverOptions(induction_bounds = (lo, hi)))
     sol = solve(dmst)
 
     @test all((lo .<= sol.a) .& (sol.a .<= hi))
@@ -140,7 +140,7 @@ end
 @testset "Fallback solution respects induction bounds" begin
     lo, hi = 0.05, 0.2
     dmst = make_dmst_case(;
-        options = DMSTOptions(maxiters = 1, induction_bounds = (lo, hi))
+        options = DMSTSolverOptions(maxiters = 1, induction_bounds = (lo, hi))
     )
     sol = solve(dmst)
 
