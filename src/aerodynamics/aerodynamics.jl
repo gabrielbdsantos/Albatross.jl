@@ -1,56 +1,3 @@
-# """
-#     LocalFlowState
-#
-# Local aerodynamic state seen by a blade section.
-#
-# This type bundles the nondimensional quantities that parameterize 2D airfoil
-# aerodynamics at a given blade section ([`AbstractBladeSection`](@ref)).
-#
-# # Fields
-#
-# - `aoa`: Angle of attack (rad). Positive by the airfoil convention used by
-#   the section model.
-# - `Re`: Reynolds number based on local relative speed and chord (–).
-# - `Ma`: Mach number based on local relative speed and speed of sound (–).
-# """
-# @concrete struct LocalFlowState
-#     aoa
-#     Re
-#     Ma
-# end
-#
-# LocalFlowState(; aoa, Re, Ma) = LocalFlowState(aoa, Re, Ma)
-#
-# @define_cat_methods LocalFlowState
-#
-# """
-#     AerodynamicCoefficients
-#
-# Aerodynamic coefficients of a 2D blade section in airfoil axes.
-#
-# # Fields
-#
-# - `Cl`: Lift coefficient (-).
-# - `Cd`: Drag coefficient (-).
-# - `Cm`: Pitching-moment coefficient (-), about the reference point implied by
-#   the section model (commonly quarter-chord).
-#
-# # Notes
-#
-# These coefficients are expressed in the airfoil's reference frame. Force
-# coefficients in the rotor's reference frame (e.g. normal/tangential) should be
-# computed separately using the local kinematics and angle of attack.
-# """
-# @concrete struct AerodynamicCoefficients
-#     Cl
-#     Cd
-#     Cm
-# end
-#
-# AerodynamicCoefficients(; Cl, Cd, Cm) = AerodynamicCoefficients(Cl, Cd, Cm)
-#
-# @define_cat_methods AerodynamicCoefficients
-
 """
     AbstractSectionAerodynamics
 
@@ -71,7 +18,7 @@ Base.broadcastable(m::AbstractSectionAerodynamics) = Ref(m)
     aerodynamic_coefficients(
         model::AbstractSectionAerodynamics,
         section::AbstractBladeSection,
-        aoa_deg,
+        aoa,
         Re
     )
 
@@ -92,7 +39,9 @@ of airfoil shape, angle of attack, and Reynolds number.
 
 # Fields
 
-- `network_parameters`: Network configuration/weights descriptor.
+- `network_parameters`: Pretrained network weights, biases, and scaled-input
+    distribution statistics.
+- `cache`: Preallocated network workspace buffers used by in-place evaluations.
 - `n_crit`: e^N critical amplification factor used by the backend.
 - `xtr_upper`: Upper-surface forced transition location (0–1).
 - `xtr_lower`: Lower-surface forced transition location (0–1).
@@ -100,12 +49,14 @@ of airfoil shape, angle of attack, and Reynolds number.
 
 # Notes
 
-Angles are provided to the backend in degrees. `Ma` is currently not used by
-this model, and `use_deep_stall` is currently not applied in backend
-evaluation. Both are retained for future extensions.
+- Angles are provided to the backend in degrees.
+- Scalar coefficient evaluation updates `cache` before running the network.
+- `Ma` is currently not used by this model, and `use_deep_stall` is currently
+    not applied in backend evaluation. Both are retained for future extensions.
 """
 @concrete struct NeuralSectionAerodynamics <: AbstractSectionAerodynamics
     network_parameters <: NNFoil.NeuralNetworkParameters
+    cache <: NNFoil.NeuralNetworkCache
     n_crit
     xtr_upper
     xtr_lower
@@ -137,8 +88,11 @@ function NeuralSectionAerodynamics(;
         model_size = :xlarge, n_crit = 9, xtr_upper = 1, xtr_lower = 1,
         use_deep_stall = false
     )
+    network_parameters = NNFoil.NeuralNetworkParameters(; model_size)
+
     return NeuralSectionAerodynamics(
-        NNFoil.NeuralNetworkParameters(; model_size),
+        network_parameters,
+        NNFoil.NeuralNetworkCache(network_parameters, Vector{Float64}(undef, 25)),
         n_crit,
         xtr_upper,
         xtr_lower,
@@ -146,32 +100,60 @@ function NeuralSectionAerodynamics(;
     )
 end
 
-# function aerodynamic_coefficients(
-#         model::NeuralSectionAerodynamics,
-#         state::LocalFlowState,
-#         section::AbstractBladeSection
-#     )
-#     x = NNFoil.evaluate(
-#         model.network_parameters,
-#         shape(section),
-#         rad2deg.(state.aoa),
-#         state.Re;
-#         n_crit = model.n_crit,
-#         xtr_upper = model.xtr_upper,
-#         xtr_lower = model.xtr_lower,
-#     )
-#     return AerodynamicCoefficients(x.CL, x.CD, x.CM)
-# end
+"""
+    aerodynamic_coefficients(model::NeuralSectionAerodynamics,
+        section::AbstractBladeSection, aoa, Re)
+
+Compute lift and drag coefficients using NNFoil for the current local flow
+state and section geometry.
+
+# Arguments
+
+- `model::NeuralSectionAerodynamics`: Neural section aerodynamics model.
+- `section::AbstractBladeSection`: Blade section providing airfoil shape.
+- `aoa`: Scalar or batched angles of attack in degrees.
+- `Re`: Scalar or batched Reynolds numbers.
+
+# Returns
+
+- `Tuple`: `(CL, CD)` lift and drag coefficients. Scalar inputs return scalar
+  coefficients; vector inputs return arrays matching the input batch.
+
+# Notes
+
+- Scalar inputs update `model.cache` in place before evaluating the network.
+- Vector inputs are evaluated out of place for compatibility with
+    ForwardDiff.jl
+"""
 function aerodynamic_coefficients(
         model::NeuralSectionAerodynamics,
         section::AbstractBladeSection,
-        aoa_deg,
-        Re
+        aoa::Real,
+        Re::Real
+    )
+    NNFoil.update_features!(
+        model.cache,
+        shape(section),
+        aoa,
+        Re,
+        model.n_crit,
+        model.xtr_upper,
+        model.xtr_lower
+    )
+    NNFoil.evaluate!(model.cache)
+    return only(model.cache.outputs.CL), only(model.cache.outputs.CD)
+end
+
+function aerodynamic_coefficients(
+        model::NeuralSectionAerodynamics,
+        section::AbstractBladeSection,
+        aoa::AbstractVector,
+        Re::AbstractVector
     )
     x = NNFoil.evaluate(
         model.network_parameters,
         shape(section),
-        aoa_deg,
+        aoa,
         Re;
         n_crit = model.n_crit,
         xtr_upper = model.xtr_upper,
