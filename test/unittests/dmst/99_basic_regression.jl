@@ -98,7 +98,7 @@ end
     @test all(0.0 .<= sol.a_up .<= 1.0)
     @test all(0.0 .<= sol.a_down .<= 1.0)
 
-    aero_fields = evaluate_aerodynamic_fields(sol)
+    aero_fields = evaluate_streamtube_fields(sol)
 
     @test length(aero_fields.a) == nexpected
     @test length(aero_fields.θ) == nexpected
@@ -113,7 +113,7 @@ end
 @testset "Momentum model -- $M" for M in subtypes(AbstractMomentumTheory)
     dmst = make_dmst_case(; momentum = M())
     sol = solve(dmst)
-    aero_fields = evaluate_aerodynamic_fields(sol)
+    aero_fields = evaluate_streamtube_fields(sol)
 
     @test all(isfinite, aero_fields.a)
     @test all(isfinite, aero_fields.Cth)
@@ -123,7 +123,7 @@ end
 @testset "Fallback on non-converged streamtubes" begin
     dmst = make_dmst_case(; options = DMSTSolverOptions(maxiters = 1))
     sol = solve(dmst)
-    aero_fields = evaluate_aerodynamic_fields(sol)
+    aero_fields = evaluate_streamtube_fields(sol)
 
     @test any(.!sol.stats_up.converged) || any(.!sol.stats_down.converged)
 
@@ -136,7 +136,7 @@ end
     lo, hi = 0.05, 0.2
     dmst = make_dmst_case(; options = DMSTSolverOptions(induction_bounds = (lo, hi)))
     sol = solve(dmst)
-    aero_fields = evaluate_aerodynamic_fields(sol)
+    aero_fields = evaluate_streamtube_fields(sol)
 
     @test all((lo .<= aero_fields.a) .& (aero_fields.a .<= hi))
 end
@@ -147,7 +147,7 @@ end
         options = DMSTSolverOptions(maxiters = 1, induction_bounds = (lo, hi))
     )
     sol = solve(dmst)
-    aero_fields = evaluate_aerodynamic_fields(sol)
+    aero_fields = evaluate_streamtube_fields(sol)
 
     @test any(.!sol.stats_up.converged) || any(.!sol.stats_down.converged)
     @test all((lo .<= aero_fields.a) .& (aero_fields.a .<= hi))
@@ -162,8 +162,8 @@ end
     @test sol1.a_up ≈ sol2.a_up
     @test sol1.a_down ≈ sol2.a_down
 
-    aero_fields1 = evaluate_aerodynamic_fields(sol1)
-    aero_fields2 = evaluate_aerodynamic_fields(sol2)
+    aero_fields1 = evaluate_streamtube_fields(sol1)
+    aero_fields2 = evaluate_streamtube_fields(sol2)
 
     for field in fieldnames(DMSTStreamtubeFields)
         @test getproperty(aero_fields1, field) ≈ getproperty(aero_fields2, field)
@@ -173,7 +173,7 @@ end
 @testset "Solution regression" begin
     dmst = make_dmst_case()
     sol = solve(dmst)
-    aero_fields = evaluate_aerodynamic_fields(sol)
+    aero_fields = evaluate_streamtube_fields(sol)
 
     @test aero_fields.a ≈ DMST_SNAPSHOT.a
     @test aero_fields.Cth ≈ DMST_SNAPSHOT.Cth

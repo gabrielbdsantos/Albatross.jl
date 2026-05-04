@@ -14,21 +14,26 @@ the thrust coefficient computed from the aerodynamic streamtube evaluation
 
 # Returns
 
-- [`DMSTNonlinearSolution`](@ref)
+- [`DMSTNonlinearSolution`](@ref), containing upstream and downstream
+  induction factors, solve contexts, and per-streamtube nonlinear diagnostics.
 
-# Note
+!!! note "Current limitations"
 
-The current implementation assumes a simplified turbine model and uniform blade
-representation. It will be generalized as blade indexing, spanwise variation,
-and full interface compliance are introduced.
+    The current implementation assumes a simplified turbine model and uniform
+    blade representation. It will be generalized as blade indexing, spanwise
+    variation, and full interface compliance are introduced.
+
+# See also
+
+[`evaluate_streamtube_fields`](@ref)
 """
 function solve(dmst::DMST)
     n_up = length(dmst.grid.azimuthal.upstream)
     n_down = length(dmst.grid.azimuthal.downstream)
 
     STATS_TYPE = DMSTSolveStats{Bool, Float64, Int64, Float64}
-    stats_up = StructArrays.StructVector{STATS_TYPE}(undef, n_up)
-    stats_down = StructArrays.StructVector{STATS_TYPE}(undef, n_down)
+    stats_up = StructVector{STATS_TYPE}(undef, n_up)
+    stats_down = StructVector{STATS_TYPE}(undef, n_down)
 
     a_up = Vector{Float64}(undef, n_up)
     a_down = Vector{Float64}(undef, n_down)
@@ -70,7 +75,7 @@ function solve_streamtubes_uncoupled!(
 
     for i in axes(ctx.θ, 1)
         residual(u, _) = (
-            drag_coefficient(momentum, u) - evaluate_streamtube_thrust(u, ctx, i)
+            drag_coefficient(momentum, u) - _streamtube_thrust_coefficient(u, ctx, i)
         )
 
         prob = NonlinearSolve.NonlinearProblem(residual, current_u)
@@ -103,7 +108,7 @@ function solve_streamtubes_uncoupled!(
     return nothing
 end
 
-function evaluate_streamtube_thrust(a, ctx::StreamtubeContext, i::Int)
+function _streamtube_thrust_coefficient(a, ctx::StreamtubeContext, i::Int)
     U_in = _getindex(ctx.U_in, i)
 
     U_r, aoa = _local_kinematics(a, U_in, ctx.ω, ctx.R, ctx.sinθ[i], ctx.cosθ[i])

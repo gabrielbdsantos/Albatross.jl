@@ -1,39 +1,53 @@
 """
-    evaluate_aerodynamic_fields(solution)
-    evaluate_aerodynamic_fields(a, ctx)
-    evaluate_aerodynamic_fields(a, θ, Δθ, U_in, turbine, environment,
+    evaluate_streamtube_fields(a, θ, Δθ, U_in, turbine, environment,
         aerodynamics)
 
-Evaluate DMST quantities for a set of azimuthal collocation points.
-
-Given an induction factor vector `a` at azimuth angles `θ` with associated
-azimuthal weights `Δθ`, this function computes local flow conditions, section
-aerodynamic coefficients, force components, and nondimensional performance
-contributions for a single streamtube evaluation (upstream or downstream).
+Evaluate aerodynamic and performance fields at azimuth collocation points.
 
 # Arguments
 
 - `a`: Induction factor(s) (-).
-- `ctx::StreamtubeContext`: Streamtube invariants.
-- `solution::DMSTNonlinearSolution`: Nonlinear solution.
-- `a`: Induction factor(s) (-).
-- `θ`: Azimuth angles (rad).
-- `Δθ`: Azimuthal weights or interval sizes (rad), size-compatible with `θ`.
+- `θ`: Azimuth collocation points (rad).
+- `Δθ`: Azimuthal weights (rad).
 - `U_in`: Incoming streamtube velocity used by the momentum balance (m/s).
-- `turbine`: Turbine model (Darrieus-type).
+- `turbine`: Turbine model.
 - `environment`: Environmental conditions (fluid and inflow).
 - `aerodynamics`: Section aerodynamics model.
 
 # Returns
 
-- [`DMSTStreamtubeOutput`](@ref) with field values evaluated at each `θ`.
+- `StructVector{DMSTStreamtubeFields}` evaluated at each `θ`.
+
+# See also
+
+[`DMSTStreamtubeFields`](@ref)
 """
-function evaluate_aerodynamic_fields(a, θ, Δθ, U_in, turbine, environment, aerodynamics)
+function evaluate_streamtube_fields(a, θ, Δθ, U_in, turbine, environment, aerodynamics)
     ctx = make_streamtube_context(θ, Δθ, U_in, turbine, environment, aerodynamics)
-    return evaluate_aerodynamic_fields(a, ctx)
+    return evaluate_streamtube_fields(a, ctx)
 end
 
-function evaluate_aerodynamic_fields(a, ctx::StreamtubeContext)
+"""
+    evaluate_streamtube_fields(a, ctx)
+
+Evaluate aerodynamic and performance fields from induction factors and a
+precomputed streamtube context.
+
+# Arguments
+
+- `a`: Induction factor(s) (-).
+- `ctx::StreamtubeContext`: Streamtube invariants and model parameters.
+
+# Returns
+
+- `StructVector{DMSTStreamtubeFields}` evaluated at each collocation point in
+  `ctx.θ`.
+
+# See also
+
+[`make_streamtube_context`](@ref), [`DMSTStreamtubeFields`](@ref)
+"""
+function evaluate_streamtube_fields(a, ctx::StreamtubeContext)
     U_r, aoa = _local_kinematics(a, ctx.U_in, ctx.ω, ctx.R, ctx.sinθ, ctx.cosθ)
     Re, Ma, Cl, Cd = _local_aerodynamics(
         U_r, aoa, ctx.c, ctx.ρ, ctx.μ, ctx.c_sound, ctx.aerodynamics, ctx.section
@@ -46,15 +60,32 @@ function evaluate_aerodynamic_fields(a, ctx::StreamtubeContext)
     Q, Cq = _section_torque(U_r, Ct, ctx.H, ctx.R, ctx.c, ctx.ρ)
     P, Cp = _section_power(Q, ctx.ω, ctx.H, ctx.R, ctx.ρ, ctx.U_inf, ctx.Δθ, ctx.B)
 
-    return StructArrays.StructVector(
+    return StructVector(
         DMSTStreamtubeFields.(
             a, ctx.θ, U_r, aoa, Re, Ma, Cl, Cd, Ct, Cn, Th, Q, P, Cth, Cq, Cp
         )
     )
 end
 
-function evaluate_aerodynamic_fields(solution::DMSTNonlinearSolution)
-    up = evaluate_aerodynamic_fields(solution.a_up, solution.ctx_up)
-    down = evaluate_aerodynamic_fields(solution.a_down, solution.ctx_down)
+"""
+    evaluate_streamtube_fields(solution)
+
+Postprocess a nonlinear DMST solution into aerodynamic and performance fields.
+
+# Arguments
+
+- `solution::DMSTNonlinearSolution`: Nonlinear solution from [`solve`](@ref).
+
+# Returns
+
+- Concatenated upstream and downstream `StructVector{DMSTStreamtubeFields}`.
+
+# See also
+
+[`solve`](@ref), [`DMSTNonlinearSolution`](@ref)
+"""
+function evaluate_streamtube_fields(solution::DMSTNonlinearSolution)
+    up = evaluate_streamtube_fields(solution.a_up, solution.ctx_up)
+    down = evaluate_streamtube_fields(solution.a_down, solution.ctx_down)
     return [up; down]
 end

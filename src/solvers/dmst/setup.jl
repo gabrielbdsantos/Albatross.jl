@@ -78,7 +78,7 @@ half-rotations.
 - `grid<:DMSTGrid`: DMST grid definition (azimuthal and spanwise points and
     weights).
 - `options<:DMSTSolverOptions`: Numerical controls for convergence tolerances,
-    iteration limits, induction bounds, damping, and coupling settings.
+    iteration limits, and induction bounds.
 
 # See also
 

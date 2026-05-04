@@ -9,7 +9,7 @@ using ConcreteStructs: @concrete
 using FillArrays: Fill
 using NNFoil: NNFoil
 using NonlinearSolve: NonlinearSolve
-using StructArrays: StructArrays
+using StructArrays
 
 include("utils.jl")
 
@@ -92,6 +92,6 @@ export
     DMSTSolveStats,
     # DMSTSolution,
     DMSTStreamtubeFields,
-    evaluate_aerodynamic_fields
+    evaluate_streamtube_fields
 
 end
