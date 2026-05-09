@@ -11,4 +11,4 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 [sources]
 AirfoilDefinitions = {rev = "v0.1.3", url = "https://github.com/gabrielbdsantos/AirfoilDefinitions.jl"}
 Albatross = {path = "../"}
-NNFoil = {rev = "v0.3.2", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}
+NNFoil = {rev = "v0.3.3", url = "https://github.com/gabrielbdsantos/NNFoil.jl"}

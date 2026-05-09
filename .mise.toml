@@ -33,7 +33,7 @@ benchpkg \
   --add \
     'https://github.com/gabrielbdsantos/ConcreteStructs.jl#main',\
     'https://github.com/gabrielbdsantos/AirfoilDefinitions.jl#v0.1.3',\
-    'https://github.com/gabrielbdsantos/NNFoil.jl#v0.3.2'
+    'https://github.com/gabrielbdsantos/NNFoil.jl#v0.3.3'
   {% if usage.filter %} --filter {{ usage.filter }} {% endif %}
 
 benchpkgtable \
