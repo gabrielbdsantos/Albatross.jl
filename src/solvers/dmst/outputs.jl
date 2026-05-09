@@ -15,7 +15,7 @@ Container for DMST nonlinear solve outputs before aerodynamic postprocessing.
 - `stats_up`: Per-streamtube nonlinear diagnostics at upstream points.
 - `stats_down`: Per-streamtube nonlinear diagnostics at downstream points.
 
-# See also
+# See Also
 
 [`solve`](@ref), [`evaluate_streamtube_fields`](@ref)
 """
@@ -52,7 +52,7 @@ Aerodynamic and performance fields evaluated at streamtube collocation points.
 - `Cq`: Instantaneous torque coefficient (-).
 - `Cp`: Instantaneous power coefficient contribution (-).
 
-# See also
+# See Also
 
 [`evaluate_streamtube_fields`](@ref)
 """

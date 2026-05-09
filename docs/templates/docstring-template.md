@@ -10,6 +10,9 @@ Use this template for docstrings across Albatross.jl.
   needed.
 - Prefer SI units and symbols used in the codebase (for example: `θ`, `Δθ`,
   `ρ`, `μ`) and state units explicitly when relevant.
+- Start field, argument, and keyword-argument descriptions with uppercase text.
+- End field, argument, return, throws, and descriptive note bullets with a
+  period. Omit periods for bare interface-method and See Also link lists.
 - Use Documenter cross-references for public APIs, e.g. [`solve`](@ref).
 - Include only sections that add value for the documented symbol.
 - `# Notes` should only be included for non-obvious design decisions,
@@ -45,9 +48,9 @@ Use this template for docstrings across Albatross.jl.
 
 Preferred sections:
 
-- `# Interface methods`
+- `# Interface Methods`
 - `# Notes` (usage conventions or extension guidance)
-- `# See also` (optional)
+- `# See Also` (optional)
 
 Example:
 
@@ -57,7 +60,7 @@ Example:
 
 Abstract supertype for `<domain>` models.
 
-# Interface methods
+# Interface Methods
 
 - [`required_method`](@ref)
 - [`other_required_method`](@ref)
@@ -80,7 +83,7 @@ Preferred sections:
 - `# Returns`
 - `# Throws` (when applicable)
 - `# Notes` (non-obvious decisions only)
-- `# See also` (optional)
+- `# See Also` (optional)
 
 Example:
 
@@ -118,7 +121,7 @@ non-obvious behavior>.
 
 - Assumptions or model-specific conventions.
 
-# See also
+# See Also
 
 - [`related_fn`](@ref), [`other_fn!`](@ref)
 """
@@ -168,7 +171,7 @@ Update `<state>` in-place using `<input>`.
 
 - In-place contract and required preconditions.
 
-# See also
+# See Also
 
 - [`related_fn`](@ref), [`other_fn!`](@ref)
 """

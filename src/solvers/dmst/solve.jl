@@ -23,7 +23,7 @@ the thrust coefficient computed from the aerodynamic streamtube evaluation
     blade representation. It will be generalized as blade indexing, spanwise
     variation, and full interface compliance are introduced.
 
-# See also
+# See Also
 
 [`evaluate_streamtube_fields`](@ref)
 """

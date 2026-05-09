@@ -6,7 +6,7 @@ Abstract supertype for prescribed inflow velocity fields.
 An `AbstractInflow` represents the undisturbed atmospheric velocity upstream of
 the turbine, prior to any induction or wake effects.
 
-# Interface methods
+# Interface Methods
 
 - [`velocity`](@ref)
 """
@@ -21,7 +21,7 @@ Compute the streamwise inflow velocity (m/s).
 
 # Arguments
 
-- `m`: A concrete subtype of [`AbstractInflow`](@ref).
+- `m`: Concrete subtype of [`AbstractInflow`](@ref).
 
 # Returns
 

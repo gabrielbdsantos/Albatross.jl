@@ -6,10 +6,10 @@ computations.
 
 # Fields
 
-- `azimuthal <: AbstractAzimuthalGrid`: azimuthal grid
-- `spanwise <: AbstractSpanwiseGrid`: spanwise grid
+- `azimuthal <: AbstractAzimuthalGrid`: Azimuthal grid.
+- `spanwise <: AbstractSpanwiseGrid`: Spanwise grid.
 
-# See also
+# See Also
 
 [`AbstractAzimuthalGrid`](@ref), [`AbstractSpanwiseGrid`](@ref),
 [`AbstractGrid`](@ref)
@@ -69,18 +69,18 @@ half-rotations.
 # Fields
 
 - `turbine<:AbstractDarrieusTurbine`: Darrieus turbine model to be solved.
-- `environment<:EnvironmentConditions`: Ambient/environmental conditions
-    (fluid and inflow).
+- `environment<:EnvironmentConditions`: Ambient/environmental conditions (fluid
+  and inflow).
 - `momentum<:AbstractMomentumTheory`: Momentum/induction submodel used to
   relate induction to thrust.
 - `aerodynamics<:AbstractSectionAerodynamics`: Section aerodynamics model
   returning airfoil coefficients.
 - `grid<:DMSTGrid`: DMST grid definition (azimuthal and spanwise points and
-    weights).
+  weights).
 - `options<:DMSTSolverOptions`: Numerical controls for convergence tolerances,
-    iteration limits, and induction bounds.
+  iteration limits, and induction bounds.
 
-# See also
+# See Also
 
 [`DMSTGrid`](@ref), [`DMSTSolverOptions`](@ref)
 """

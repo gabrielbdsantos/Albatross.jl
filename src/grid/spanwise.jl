@@ -19,9 +19,9 @@ It acts as a thin wrapper around [`AbstractGrid1D`](@ref).
 
 # Fields
 
-- `grid::UniformGrid1D`: underlying one-dimensional uniform grid
+- `grid::UniformGrid1D`: Underlying one-dimensional uniform grid.
 
-# See also
+# See Also
 
 [`AbstractSpanwiseGrid`](@ref), [`UniformGrid1D`](@ref), [`DMSTGrid`](@ref)
 """

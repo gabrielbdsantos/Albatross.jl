@@ -7,7 +7,7 @@ A subtype of `AbstractTurbine` represents the geometric and structural
 configuration of a wind turbine (rotor geometry, blade geometry, and
 kinematics).
 
-# Interface methods
+# Interface Methods
 
 - [`num_blades`](@ref)
 - [`kinematics`](@ref)

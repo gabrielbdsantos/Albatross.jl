@@ -6,7 +6,7 @@ Abstract supertype for *prescribed* rotor kinematic models.
 A subtype of `AbstractRotorKinematics` defines the rotational kinematics of the
 rotor independently of aerodynamic loads, inertia, or control dynamics.
 
-# Interface methods
+# Interface Methods
 
 - [`angular_velocity`](@ref)
 """

@@ -11,7 +11,7 @@ Abstract supertype for thermophysical fluid models.
 A subtype of `AbstractFluid` represents a material model capable of providing
 thermodynamic and transport properties required by the aerodynamic solver.
 
-# Interface methods
+# Interface Methods
 
 - [`density`](@ref)
 - [`viscosity`](@ref)
@@ -53,8 +53,8 @@ infinite.
 
 # Fields
 
-- `ρ`: Fluid density (kg/m³)
-- `μ`: Dynamic viscosity (Pa·s)
+- `ρ`: Fluid density (kg/m³).
+- `μ`: Dynamic viscosity (Pa·s).
 """
 @concrete struct IncompressibleFluid <: AbstractFluid
     ρ
@@ -77,9 +77,9 @@ sound, allowing simple compressibility corrections.
 
 # Fields
 
-- `ρ`: Fluid density (kg/m³)
-- `μ`: Dynamic viscosity (Pa·s)
-- `c`: Speed of sound (m/s)
+- `ρ`: Fluid density (kg/m³).
+- `μ`: Dynamic viscosity (Pa·s).
+- `c`: Speed of sound (m/s).
 """
 @concrete struct ConstantPropertyFluid <: AbstractFluid
     ρ

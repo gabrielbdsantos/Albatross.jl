@@ -6,7 +6,7 @@ Abstract supertype for 2D blade section aerodynamic models.
 A subtype of `AbstractSectionAerodynamics` provides a mapping from a local flow
 state and a blade section description to 2D aerodynamic coefficients.
 
-# Interface methods
+# Interface Methods
 
 - [`aerodynamic_coefficients`](@ref)
 """
@@ -24,8 +24,8 @@ Base.broadcastable(m::AbstractSectionAerodynamics) = Ref(m)
 
 Return aerodynamic coefficients for `section` under the local flow conditions.
 
-Concrete models must implement this method and return aerodynamic
-coefficients compatible with downstream solver usage.
+Concrete models must implement this method and return aerodynamic coefficients
+compatible with downstream solver usage.
 """
 function aerodynamic_coefficients end
 
@@ -40,9 +40,9 @@ of airfoil shape, angle of attack, and Reynolds number.
 # Fields
 
 - `network_parameters`: Pretrained network weights, biases, and scaled-input
-    distribution statistics.
+  distribution statistics.
 - `cache`: Preallocated network workspace buffers used by in-place evaluations.
-- `n_crit`: e^N critical amplification factor used by the backend.
+- `n_crit`: Critical amplification factor (`e^N`) used by the backend.
 - `xtr_upper`: Upper-surface forced transition location (0–1).
 - `xtr_lower`: Lower-surface forced transition location (0–1).
 - `use_deep_stall`: Reserved flag for deep-stall / post-stall (360°) handling.
@@ -52,7 +52,7 @@ of airfoil shape, angle of attack, and Reynolds number.
 - Angles are provided to the backend in degrees.
 - Scalar coefficient evaluation updates `cache` before running the network.
 - `Ma` is currently not used by this model, and `use_deep_stall` is currently
-    not applied in backend evaluation. Both are retained for future extensions.
+  not applied in backend evaluation. Both are retained for future extensions.
 """
 @concrete struct NeuralSectionAerodynamics <: AbstractSectionAerodynamics
     network_parameters <: NNFoil.NeuralNetworkParameters
@@ -78,7 +78,7 @@ size and auxiliary parameters.
 # Keyword Arguments
 
 - `model_size`: Network capacity preset (passed to `NeuralNetworkParameters`).
-- `n_crit`: e^N critical amplification factor (backend-dependent).
+- `n_crit`: Critical amplification factor (`e^N`; backend-dependent).
 - `xtr_upper`: Upper-surface forced transition location (0–1).
 - `xtr_lower`: Lower-surface forced transition location (0–1).
 - `use_deep_stall`: Reserved for future deep-stall / post-stall handling;
@@ -123,7 +123,7 @@ state and section geometry.
 
 - Scalar inputs update `model.cache` in place before evaluating the network.
 - Vector inputs are evaluated out of place for compatibility with
-    ForwardDiff.jl
+  ForwardDiff.jl.
 """
 function aerodynamic_coefficients(
         model::NeuralSectionAerodynamics,

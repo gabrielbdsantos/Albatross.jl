@@ -6,13 +6,13 @@ Abstract supertype for grid definitions.
 A grid defines a finite set of cell-centered collocation points on an interval,
 together with quadrature weights associated with each point.
 
-# Interface methods
+# Interface Methods
 
-- `Base.length(grid)`: number of points
-- [`bounds`](@ref): lower/upper bounds of the grid domain
-- [`extent`](@ref): domain length
-- [`points`](@ref): vector of point locations (typically cell centers)
-- [`weights`](@ref): vector of quadrature weights (typically cell widths)
+- `Base.length(grid)`: Number of points.
+- [`bounds`](@ref): Lower/upper bounds of the grid domain.
+- [`extent`](@ref): Domain length.
+- [`points`](@ref): Vector of point locations (typically cell centers).
+- [`weights`](@ref): Vector of quadrature weights (typically cell widths).
 
 The conventions for whether points represent nodes or cell-centers are
 grid-specific and must be documented by each concrete grid type.
@@ -68,11 +68,11 @@ equal to `Δx`.
 
 # Fields
 
-- `n`: number of points
-- `Δx`: uniform cell width
-- `bounds`: interval endpoints
+- `n`: Number of points.
+- `Δx`: Uniform cell width.
+- `bounds`: Interval endpoints.
 
-# See also
+# See Also
 
 [`points`](@ref), [`weights`](@ref), [`bounds`](@ref), [`extent`](@ref)
 """
@@ -89,9 +89,9 @@ equal to `Δx`.
 
     # Arguments
 
-    - `n::Integer`: number of points (must be positive)
-    - `bounds::Tuple{<:Real, <:Real}`: interval endpoints `(x0, xL)` with
-      `xL > x0`
+    - `n::Integer`: Number of points (must be positive).
+    - `bounds::Tuple{<:Real, <:Real}`: Interval endpoints `(x0, xL)` with
+      `xL > x0`.
 
     # Throws
 

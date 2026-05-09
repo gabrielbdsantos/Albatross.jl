@@ -3,7 +3,7 @@
 
 Abstract supertype for momentum theory formulations.
 
-# Interface methods
+# Interface Methods
 
 - [`wake_velocity_ratio`](@ref)
 - [`drag_coefficient`](@ref)

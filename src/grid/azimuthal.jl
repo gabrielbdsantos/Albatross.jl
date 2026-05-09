@@ -24,10 +24,10 @@ Both halves use `n` equally-sized cells, so the full grid has `2n` points.
 
 # Fields
 
-- `upstream::UniformGrid1D`: uniform grid over `(ψ₀, ψ₀ + π)`
-- `downstream::UniformGrid1D`: uniform grid over `(ψ₀ + π, ψ₀ + 2π)`
+- `upstream::UniformGrid1D`: Uniform grid over `(ψ₀, ψ₀ + π)`.
+- `downstream::UniformGrid1D`: Uniform grid over `(ψ₀ + π, ψ₀ + 2π)`.
 
-# See also
+# See Also
 
 [`AbstractAzimuthalGrid`](@ref), [`DMSTGrid`](@ref)
 """
@@ -45,11 +45,11 @@ Both halves use `n` equally-sized cells, so the full grid has `2n` points.
 
     # Arguments
 
-    - `n::Integer`: number of cells per half-cycle (must be positive)
+    - `n::Integer`: Number of cells per half-cycle (must be positive).
 
     # Keyword Arguments
 
-    - `ψ₀::Real`: azimuth at the start of the upstream half-cycle
+    - `ψ₀::Real`: Azimuth at the start of the upstream half-cycle.
     """
     function UniformAzimuthalGrid(n::T; ψ₀::Real = 0) where {T <: Integer}
         up = UniformGrid1D(n, (ψ₀, ψ₀ + pi))

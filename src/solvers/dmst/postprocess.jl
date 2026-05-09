@@ -18,7 +18,7 @@ Evaluate aerodynamic and performance fields at azimuth collocation points.
 
 - `StructVector{DMSTStreamtubeFields}` evaluated at each `θ`.
 
-# See also
+# See Also
 
 [`DMSTStreamtubeFields`](@ref)
 """
@@ -43,7 +43,7 @@ precomputed streamtube context.
 - `StructVector{DMSTStreamtubeFields}` evaluated at each collocation point in
   `ctx.θ`.
 
-# See also
+# See Also
 
 [`make_streamtube_context`](@ref), [`DMSTStreamtubeFields`](@ref)
 """
@@ -80,7 +80,7 @@ Postprocess a nonlinear DMST solution into aerodynamic and performance fields.
 
 - Concatenated upstream and downstream `StructVector{DMSTStreamtubeFields}`.
 
-# See also
+# See Also
 
 [`solve`](@ref), [`DMSTNonlinearSolution`](@ref)
 """

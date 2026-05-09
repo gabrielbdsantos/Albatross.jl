@@ -7,7 +7,7 @@ A subtype of `AbstractBladeGeometry` defines how blade sections are arranged
 along the blade span and provides access to the corresponding blade section
 geometry at a given spanwise coordinate.
 
-# Interface methods
+# Interface Methods
 
 - [`section`](@ref)
 - [`span`](@ref)
@@ -87,8 +87,8 @@ pitch(b::AbstractBladeGeometry, z) = pitch(section(b, z))
 """
     UniformStraightBlade <: AbstractBladeGeometry
 
-Straight blade geometry with a single, uniform blade section along the
-entire span.
+Straight blade geometry with a single, uniform blade section along the entire
+span.
 
 # Fields
 

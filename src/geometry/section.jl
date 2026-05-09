@@ -3,7 +3,7 @@
 
 Abstract supertype for blade section geometry descriptions.
 
-# Interface methods
+# Interface Methods
 
 - [`shape`](@ref)
 - [`chord`](@ref)
