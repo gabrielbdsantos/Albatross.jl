@@ -9,21 +9,21 @@ Container for DMST nonlinear solve outputs before aerodynamic postprocessing.
   (-).
 - `a_down`: Downstream induction factors at downstream azimuth collocation
   points (-).
-- `ctx_up<:StreamtubeContext`: Upstream streamtube context used during solve.
-- `ctx_down<:StreamtubeContext`: Downstream streamtube context used during
-  solve.
+- `ctxs_up`: Upstream streamtube contexts used during solve.
+- `ctxs_down`: Downstream streamtube contexts used during solve.
 - `stats_up`: Per-streamtube nonlinear diagnostics at upstream points.
 - `stats_down`: Per-streamtube nonlinear diagnostics at downstream points.
 
 # See Also
 
-[`solve`](@ref), [`evaluate_streamtube_fields`](@ref)
+[`solve`](@ref), [`build_streamtube_contexts`](@ref),
+[`evaluate_streamtube_fields`](@ref)
 """
 @concrete struct DMSTNonlinearSolution
     a_up
     a_down
-    ctx_up
-    ctx_down
+    ctxs_up
+    ctxs_down
     stats_up
     stats_down
 end

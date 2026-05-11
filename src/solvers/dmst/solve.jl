@@ -31,15 +31,14 @@ function solve(dmst::DMST)
     n_up = length(dmst.grid.azimuthal.upstream)
     n_down = length(dmst.grid.azimuthal.downstream)
 
-    STATS_TYPE = DMSTSolveStats{Bool, Float64, Int64, Float64}
-    stats_up = StructVector{STATS_TYPE}(undef, n_up)
-    stats_down = StructVector{STATS_TYPE}(undef, n_down)
+    stats_up = StructVector(DMSTSolveStats() for _ in 1:n_up)
+    stats_down = StructVector(DMSTSolveStats() for _ in 1:n_down)
 
     a_up = Vector{Float64}(undef, n_up)
     a_down = Vector{Float64}(undef, n_down)
 
     U_inf = velocity(dmst.environment.inflow)
-    ctx_up = make_streamtube_context(
+    ctxs_up = build_streamtube_contexts(
         points(dmst.grid.azimuthal.upstream),
         weights(dmst.grid.azimuthal.upstream),
         U_inf,
@@ -47,10 +46,10 @@ function solve(dmst::DMST)
         dmst.environment,
         dmst.aerodynamics
     )
-    solve_streamtubes_uncoupled!(a_up, stats_up, ctx_up, dmst.momentum, dmst.options)
+    solve_streamtubes_uncoupled!(a_up, stats_up, ctxs_up, dmst.momentum, dmst.options)
 
     U_wake = U_inf .* wake_velocity_ratio.(dmst.momentum, reverse(a_up))
-    ctx_down = make_streamtube_context(
+    ctxs_down = build_streamtube_contexts(
         points(dmst.grid.azimuthal.downstream),
         weights(dmst.grid.azimuthal.downstream),
         U_wake,
@@ -58,24 +57,24 @@ function solve(dmst::DMST)
         dmst.environment,
         dmst.aerodynamics
     )
-    solve_streamtubes_uncoupled!(a_down, stats_down, ctx_down, dmst.momentum, dmst.options)
+    solve_streamtubes_uncoupled!(a_down, stats_down, ctxs_down, dmst.momentum, dmst.options)
 
-    return DMSTNonlinearSolution(a_up, a_down, ctx_up, ctx_down, stats_up, stats_down)
+    return DMSTNonlinearSolution(a_up, a_down, ctxs_up, ctxs_down, stats_up, stats_down)
 end
 
 function solve_streamtubes_uncoupled!(
         a::AbstractVector{<:Real},
         stats::AbstractVector{<:DMSTSolveStats},
-        ctx::StreamtubeContext,
+        contexts::AbstractVector{<:DMSTStreamtubeContext},
         momentum::AbstractMomentumTheory,
         options::DMSTSolverOptions,
     )
     a_min, a_max = options.solution_bounds
-    current_u = zero(_getindex(ctx.θ, 1))
+    current_u = zero(first(contexts.θ))
 
-    for i in axes(ctx.θ, 1)
+    for i in eachindex(contexts)
         residual(u, _) = (
-            drag_coefficient(momentum, u) - _streamtube_thrust_coefficient(u, ctx, i)
+            drag_coefficient(momentum, u) - _streamtube_thrust_coefficient(u, contexts[i])
         )
 
         prob = NonlinearSolve.NonlinearProblem(residual, current_u)
@@ -108,18 +107,10 @@ function solve_streamtubes_uncoupled!(
     return nothing
 end
 
-function _streamtube_thrust_coefficient(a, ctx::StreamtubeContext, i::Int)
-    U_in = _getindex(ctx.U_in, i)
-
-    U_r, aoa = _local_kinematics(a, U_in, ctx.ω, ctx.R, ctx.sinθ[i], ctx.cosθ[i])
-    _, _, Cl, Cd = _local_aerodynamics(
-        U_r, aoa, ctx.c, ctx.ρ, ctx.μ, ctx.c_sound, ctx.aerodynamics, ctx.section
-    )
+function _streamtube_thrust_coefficient(a, ctx::DMSTStreamtubeContext)
+    U_r, aoa = _local_kinematics(a, ctx)
+    _, _, Cl, Cd = _local_aerodynamics(U_r, aoa, ctx)
     Ct, Cn = _section_force_coefficients(aoa, Cl, Cd)
-    _, Cth = _section_thrust(
-        U_r, U_in, Ct, Cn, ctx.B, ctx.H, ctx.R, ctx.c, ctx.ρ,
-        ctx.Δθ[i], ctx.sinθ[i], ctx.cosθ[i], ctx.abs_sinθ[i]
-    )
-
+    _, Cth = _section_thrust(U_r, Ct, Cn, ctx)
     return Cth
 end

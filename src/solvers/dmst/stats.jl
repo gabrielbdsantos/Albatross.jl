@@ -22,3 +22,5 @@ Diagnostics for one streamtube nonlinear solve.
     num_iters <: Integer
     elapsed_time <: Real
 end
+
+DMSTSolveStats() = DMSTSolveStats(false, Inf, 0, 0.0)

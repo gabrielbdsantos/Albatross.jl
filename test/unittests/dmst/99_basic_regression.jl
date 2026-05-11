@@ -68,8 +68,8 @@ end
     @test sol isa Albatross.DMSTNonlinearSolution
     @test sol.a_up isa AbstractVector
     @test sol.a_down isa AbstractVector
-    @test sol.ctx_up isa Albatross.StreamtubeContext
-    @test sol.ctx_down isa Albatross.StreamtubeContext
+    @test sol.ctxs_up isa AbstractVector{<:Albatross.DMSTStreamtubeContext}
+    @test sol.ctxs_down isa AbstractVector{<:Albatross.DMSTStreamtubeContext}
     @test sol.stats_up isa AbstractVector{<:Albatross.DMSTSolveStats}
     @test sol.stats_down isa AbstractVector{<:Albatross.DMSTSolveStats}
 

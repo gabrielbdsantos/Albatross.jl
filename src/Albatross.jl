@@ -90,7 +90,6 @@ export
     DMSTGrid,
     DMSTSolverOptions,
     DMSTSolveStats,
-    # DMSTSolution,
     DMSTStreamtubeFields,
     evaluate_streamtube_fields
 

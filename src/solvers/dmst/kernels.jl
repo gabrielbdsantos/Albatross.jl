@@ -1,3 +1,4 @@
+# Methods with explicit arguments {{{
 function _local_kinematics(a, U_in, ω, R, sinθ, cosθ)
     U_a = @. U_in * (1 - a)
 
@@ -55,3 +56,56 @@ function _section_power(Q, ω, H, R, ρ, U_inf, Δθ, B)
 
     return (; P, Cp)
 end
+# }}}
+# Context-based methods {{{
+function _local_kinematics(a, ctx::DMSTStreamtubeContext)
+    U_a = ctx.U_in * (1 - a)
+
+    Vt = -(ctx.ω * ctx.R + U_a * ctx.cosθ)
+    Vn = -U_a * ctx.sinθ
+
+    U_r = sqrt(Vt^2 + Vn^2)
+    aoa = atan(Vn, -Vt)
+
+    return (; U_r, aoa)
+end
+
+function _local_aerodynamics(U_r, aoa, ctx::DMSTStreamtubeContext)
+    Re = ctx.ρ * U_r * ctx.c / ctx.μ
+    Ma = U_r / ctx.c_sound
+    Cl, Cd = aerodynamic_coefficients(ctx.aerodynamics, ctx.section, rad2deg(aoa), Re)
+
+    return (; Re, Ma, Cl, Cd)
+end
+
+function _section_thrust(U_r, Ct, Cn, ctx::DMSTStreamtubeContext)
+    A_blade_surface = ctx.H * ctx.c
+    q_local = 0.5 * ctx.ρ * A_blade_surface * U_r^2
+    Th = q_local * -(Ct * ctx.cosθ + Cn * ctx.sinθ)
+
+    A_streamtube = ctx.H * ctx.R * ctx.Δθ * ctx.abs_sinθ
+    q_streamtube = 0.5 * ctx.ρ * A_streamtube * ctx.U_in^2
+    Cth = ctx.B / 2pi * (ctx.Δθ * Th) / q_streamtube
+
+    return (; Th, Cth)
+end
+
+function _section_torque(U_r, Ct, ctx::DMSTStreamtubeContext)
+    A_blade_surface = ctx.H * ctx.c
+    q_local = 0.5 * ctx.ρ * A_blade_surface * U_r^2
+    Cq = ctx.R * Ct
+    Q = q_local * Cq
+
+    return (; Q, Cq)
+end
+
+function _section_power(Q, ctx::DMSTStreamtubeContext)
+    P = Q * ctx.ω
+
+    A_turbine = ctx.H * (2 * ctx.R)
+    q_inf = 0.5 * ctx.ρ * A_turbine * ctx.U_inf^3
+    Cp = (ctx.B / 2pi) * (ctx.Δθ * P) / q_inf
+
+    return (; P, Cp)
+end
+# }}}

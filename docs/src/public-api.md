@@ -95,7 +95,6 @@ weights
 ```@docs
 AbstractSolver
 solve
-evaluate_streamtube
 ```
 
 ## DMST
@@ -103,11 +102,13 @@ evaluate_streamtube
 ```@docs
 DMST
 DMSTGrid
-DMSTStreamtubeOutput
 DMSTSolverOptions
 DMSTSolveStats
-DMSTSolution
-StreamtubeSolveStats
+DMSTStreamtubeContext
+build_streamtube_contexts
+DMSTNonlinearSolution
+DMSTStreamtubeFields
+evaluate_streamtube_fields
 ```
 
 ## Utilities
