@@ -52,7 +52,8 @@ precomputed streamtube context collection.
 function evaluate_streamtube_fields(a, ctxs::AbstractVector{<:DMSTStreamtubeContext})
     U_r, aoa = _local_kinematics(a, ctxs.U_in, ctxs.ω, ctxs.R, ctxs.sinθ, ctxs.cosθ)
     Re, Ma, Cl, Cd = _local_aerodynamics(
-        U_r, aoa, ctxs.c, ctxs.ρ, ctxs.μ, ctxs.c_sound, ctxs.aerodynamics, ctxs.section
+        U_r, aoa, ctxs.c, ctxs.ρ, ctxs.μ, ctxs.v_sound,
+        ctxs.aerodynamics, ctxs.section
     )
     Ct, Cn = _section_force_coefficients(aoa, Cl, Cd)
     Th, Cth = _section_thrust(

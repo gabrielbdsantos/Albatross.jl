@@ -11,9 +11,9 @@ function _local_kinematics(a, U_in, ω, R, sinθ, cosθ)
     return (; U_r, aoa)
 end
 
-function _local_aerodynamics(U_r, aoa, c, ρ, μ, c_sound, model, blade_section)
+function _local_aerodynamics(U_r, aoa, c, ρ, μ, v_sound, model, blade_section)
     Re = @. ρ * U_r * c / μ
-    Ma = @. U_r / c_sound
+    Ma = @. U_r / v_sound
     Cl, Cd = aerodynamic_coefficients(model, blade_section, rad2deg.(aoa), Re)
 
     return (; Re, Ma, Cl, Cd)
@@ -72,7 +72,7 @@ end
 
 function _local_aerodynamics(U_r, aoa, ctx::DMSTStreamtubeContext)
     Re = ctx.ρ * U_r * ctx.c / ctx.μ
-    Ma = U_r / ctx.c_sound
+    Ma = U_r / ctx.v_sound
     Cl, Cd = aerodynamic_coefficients(ctx.aerodynamics, ctx.section, rad2deg(aoa), Re)
 
     return (; Re, Ma, Cl, Cd)

@@ -1,7 +1,7 @@
 # Thermophysical properties of air at standard conditions.
 const ρ_air = 1.225
 const μ_air = 1.5e-5
-const c_air = 343.0
+const v_sound_air = 343.0
 
 """
     AbstractFluid
@@ -79,16 +79,17 @@ sound, allowing simple compressibility corrections.
 
 - `ρ`: Fluid density (kg/m³).
 - `μ`: Dynamic viscosity (Pa·s).
-- `c`: Speed of sound (m/s).
+- `v_sound`: Speed of sound (m/s).
 """
 @concrete struct ConstantPropertyFluid <: AbstractFluid
     ρ
     μ
-    c
+    v_sound
 end
 
-ConstantPropertyFluid(; ρ = ρ_air, μ = μ_air, c = c_air) = ConstantPropertyFluid(ρ, μ, c)
+ConstantPropertyFluid(; ρ = ρ_air, μ = μ_air, v_sound = v_sound_air) =
+    ConstantPropertyFluid(ρ, μ, v_sound)
 
 density(x::ConstantPropertyFluid) = x.ρ
 viscosity(x::ConstantPropertyFluid) = x.μ
-speed_of_sound(x::ConstantPropertyFluid) = x.c
+speed_of_sound(x::ConstantPropertyFluid) = x.v_sound

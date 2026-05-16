@@ -18,7 +18,7 @@ Precomputed runtime data for one DMST streamtube collocation point.
 - `U_inf`: Free-stream inflow velocity (m/s).
 - `ρ`: Fluid density (kg/m³).
 - `μ`: Fluid dynamic viscosity (Pa·s).
-- `c_sound`: Fluid speed of sound (m/s).
+- `v_sound`: Fluid speed of sound (m/s).
 - `B`: Number of turbine blades (–).
 - `section<:AbstractBladeSection`: Blade section used for local aerodynamic
   evaluation.
@@ -40,7 +40,7 @@ Precomputed runtime data for one DMST streamtube collocation point.
     U_inf
     ρ
     μ
-    c_sound
+    v_sound
 
     B
 
