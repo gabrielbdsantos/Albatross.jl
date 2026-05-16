@@ -32,14 +32,14 @@ Numerical controls for the nonlinear solver in DMST.
 - `abstol`: Absolute tolerance for nonlinear residual convergence.
 - `reltol`: Relative tolerance for nonlinear residual convergence.
 - `maxiters`: Maximum nonlinear iterations per solve stage.
-- `solution_bounds`: Allowed induction-factor interval `(u_min, u_max)`.
+- `induction_bounds`: Allowed induction-factor interval `(u_min, u_max)`.
 """
 @concrete struct DMSTSolverOptions
     algorithm <: NonlinearSolve.NonlinearSolveBase.AbstractNonlinearSolveAlgorithm
     abstol <: Real
     reltol <: Real
     maxiters <: Integer
-    solution_bounds <: Tuple{<:Real, <:Real}
+    induction_bounds <: Tuple{<:Real, <:Real}
 end
 
 DMSTSolverOptions(;

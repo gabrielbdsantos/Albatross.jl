@@ -69,7 +69,7 @@ function solve_streamtubes_uncoupled!(
         momentum::AbstractMomentumTheory,
         options::DMSTSolverOptions,
     )
-    a_min, a_max = options.solution_bounds
+    a_min, a_max = options.induction_bounds
     current_u = zero(first(contexts.θ))
 
     for i in eachindex(contexts)
