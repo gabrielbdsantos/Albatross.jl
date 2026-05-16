@@ -47,6 +47,7 @@ export
     # Environment
     AbstractFluid,
     ConstantPropertyFluid,
+    IncompressibleFluid,
     AbstractInflow,
     UniformInflow,
     EnvironmentConditions,
