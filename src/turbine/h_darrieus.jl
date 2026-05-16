@@ -12,10 +12,10 @@ of aerodynamic loading.
 
 # Fields
 
-- `blade`: Blade geometry model describing the spanwise layout and section
-  geometry of a single blade.
-- `kinematics`: Rotor kinematics model prescribing the angular motion of the
-  rotor.
+- `blade<:AbstractBladeGeometry`: Blade geometry model describing the spanwise
+  layout and section geometry of a single blade.
+- `kinematics<:AbstractRotorKinematics`: Rotor kinematics model prescribing the
+  angular motion of the rotor.
 - `num_blades`: Number of blades in the rotor.
 """
 @concrete struct UniformBladeHDarrieus <: AbstractDarrieusTurbine

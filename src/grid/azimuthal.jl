@@ -29,7 +29,7 @@ Both halves use `n` equally-sized cells, so the full grid has `2n` points.
 
 # See Also
 
-[`AbstractAzimuthalGrid`](@ref), [`DMSTGrid`](@ref)
+[`AbstractAzimuthalGrid`](@ref), [`DMSTGrid`](@ref).
 """
 @concrete struct UniformAzimuthalGrid <: AbstractAzimuthalGrid
     upstream <: UniformGrid1D
@@ -50,6 +50,10 @@ Both halves use `n` equally-sized cells, so the full grid has `2n` points.
     # Keyword Arguments
 
     - `ψ₀::Real`: Azimuth at the start of the upstream half-cycle.
+
+    # Throws
+
+    - `ArgumentError`: If `n` is not positive.
     """
     function UniformAzimuthalGrid(n::T; ψ₀::Real = 0) where {T <: Integer}
         up = UniformGrid1D(n, (ψ₀, ψ₀ + pi))

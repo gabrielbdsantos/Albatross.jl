@@ -39,9 +39,10 @@ of airfoil shape, angle of attack, and Reynolds number.
 
 # Fields
 
-- `network_parameters`: Pretrained network weights, biases, and scaled-input
-  distribution statistics.
-- `cache`: Preallocated network workspace buffers used by in-place evaluations.
+- `network_parameters<:NNFoil.NeuralNetworkParameters`: Pretrained network
+  weights, biases, and scaled-input distribution statistics.
+- `cache<:NNFoil.NeuralNetworkCache`: Preallocated network workspace buffers
+  used by in-place evaluations.
 - `n_crit`: Critical amplification factor (`e^N`) used by the backend.
 - `xtr_upper`: Upper-surface forced transition location (0–1).
 - `xtr_lower`: Lower-surface forced transition location (0–1).

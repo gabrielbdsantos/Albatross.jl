@@ -5,10 +5,10 @@ Diagnostics for one streamtube nonlinear solve.
 
 # Fields
 
-- `converged`: Whether the nonlinear solve converged.
-- `residual`: Final nonlinear residual.
-- `num_iters`: Number of nonlinear iterations performed.
-- `elapsed_time`: Wall-clock solve time in seconds.
+- `converged<:Bool`: Whether the nonlinear solve converged.
+- `residual<:Real`: Final nonlinear residual.
+- `num_iters<:Integer`: Number of nonlinear iterations performed.
+- `elapsed_time<:Real`: Wall-clock solve time in seconds.
 
 # Notes
 

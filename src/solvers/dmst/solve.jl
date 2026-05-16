@@ -25,7 +25,7 @@ the thrust coefficient computed from the aerodynamic streamtube evaluation
 
 # See Also
 
-[`evaluate_streamtube_fields`](@ref)
+[`evaluate_streamtube_fields`](@ref).
 """
 function solve(dmst::DMST)
     n_up = length(dmst.grid.azimuthal.upstream)

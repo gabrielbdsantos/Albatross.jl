@@ -74,7 +74,7 @@ equal to `Δx`.
 
 # See Also
 
-[`points`](@ref), [`weights`](@ref), [`bounds`](@ref), [`extent`](@ref)
+[`points`](@ref), [`weights`](@ref), [`bounds`](@ref), [`extent`](@ref).
 """
 @concrete struct UniformGrid1D <: AbstractGrid1D
     n

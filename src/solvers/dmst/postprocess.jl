@@ -6,7 +6,7 @@ Evaluate aerodynamic and performance fields at azimuth collocation points.
 
 # Arguments
 
-- `a`: Induction factor(s) (-).
+- `a`: Induction factor(s) (–).
 - `θ`: Azimuth collocation points (rad).
 - `Δθ`: Azimuthal weights (rad).
 - `U_in`: Incoming streamtube velocity used by the momentum balance (m/s).
@@ -20,7 +20,7 @@ Evaluate aerodynamic and performance fields at azimuth collocation points.
 
 # See Also
 
-[`build_streamtube_contexts`](@ref), [`DMSTStreamtubeFields`](@ref)
+[`build_streamtube_contexts`](@ref), [`DMSTStreamtubeFields`](@ref).
 """
 function evaluate_streamtube_fields(a, θ, Δθ, U_in, turbine, environment, aerodynamics)
     ctxs = build_streamtube_contexts(θ, Δθ, U_in, turbine, environment, aerodynamics)
@@ -35,7 +35,7 @@ precomputed streamtube context collection.
 
 # Arguments
 
-- `a`: Induction factor(s) (-).
+- `a`: Induction factor(s) (–).
 - `ctxs::AbstractVector{<:DMSTStreamtubeContext}`: Streamtube invariants and
   model parameters returned by [`build_streamtube_contexts`](@ref).
 
@@ -47,7 +47,7 @@ precomputed streamtube context collection.
 # See Also
 
 [`build_streamtube_contexts`](@ref), [`DMSTStreamtubeContext`](@ref),
-[`DMSTStreamtubeFields`](@ref)
+[`DMSTStreamtubeFields`](@ref).
 """
 function evaluate_streamtube_fields(a, ctxs::AbstractVector{<:DMSTStreamtubeContext})
     U_r, aoa = _local_kinematics(a, ctxs.U_in, ctxs.ω, ctxs.R, ctxs.sinθ, ctxs.cosθ)
@@ -84,7 +84,7 @@ Postprocess a nonlinear DMST solution into aerodynamic and performance fields.
 
 # See Also
 
-[`solve`](@ref), [`DMSTNonlinearSolution`](@ref)
+[`solve`](@ref), [`DMSTNonlinearSolution`](@ref).
 """
 evaluate_streamtube_fields(sol::DMSTNonlinearSolution) =
     evaluate_streamtube_fields([sol.a_up; sol.a_down], [sol.ctxs_up; sol.ctxs_down])

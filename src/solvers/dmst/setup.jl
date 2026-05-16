@@ -6,13 +6,13 @@ computations.
 
 # Fields
 
-- `azimuthal <: AbstractAzimuthalGrid`: Azimuthal grid.
-- `spanwise <: AbstractSpanwiseGrid`: Spanwise grid.
+- `azimuthal<:AbstractAzimuthalGrid`: Azimuthal grid.
+- `spanwise<:AbstractSpanwiseGrid`: Spanwise grid.
 
 # See Also
 
 [`AbstractAzimuthalGrid`](@ref), [`AbstractSpanwiseGrid`](@ref),
-[`AbstractGrid`](@ref)
+[`AbstractGrid`](@ref).
 """
 @concrete struct DMSTGrid
     azimuthal <: AbstractAzimuthalGrid
@@ -28,11 +28,13 @@ Numerical controls for the nonlinear solver in DMST.
 
 # Fields
 
-- `algorithm`: Nonlinear solve algorithm.
-- `abstol`: Absolute tolerance for nonlinear residual convergence.
-- `reltol`: Relative tolerance for nonlinear residual convergence.
-- `maxiters`: Maximum nonlinear iterations per solve stage.
-- `induction_bounds`: Allowed induction-factor interval `(u_min, u_max)`.
+- `algorithm<:NonlinearSolve.NonlinearSolveBase.AbstractNonlinearSolveAlgorithm`:
+  Nonlinear solve algorithm.
+- `abstol<:Real`: Absolute tolerance for nonlinear residual convergence.
+- `reltol<:Real`: Relative tolerance for nonlinear residual convergence.
+- `maxiters<:Integer`: Maximum nonlinear iterations per solve stage.
+- `induction_bounds<:Tuple{<:Real, <:Real}`: Allowed interval for the induction
+  factor `(a_min, a_max)`.
 """
 @concrete struct DMSTSolverOptions
     algorithm <: NonlinearSolve.NonlinearSolveBase.AbstractNonlinearSolveAlgorithm
@@ -82,7 +84,7 @@ half-rotations.
 
 # See Also
 
-[`DMSTGrid`](@ref), [`DMSTSolverOptions`](@ref)
+[`DMSTGrid`](@ref), [`DMSTSolverOptions`](@ref).
 """
 @concrete struct DMST <: AbstractSolver
     turbine <: AbstractDarrieusTurbine

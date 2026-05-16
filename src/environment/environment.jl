@@ -1,6 +1,8 @@
 """
     EnvironmentConditions
 
+Ambient fluid and inflow conditions for rotor analyses.
+
 # Fields
 
 - `fluid<:AbstractFluid`: Fluid thermophysical model.

@@ -10,9 +10,11 @@ Use this template for docstrings across Albatross.jl.
   needed.
 - Prefer SI units and symbols used in the codebase (for example: `θ`, `Δθ`,
   `ρ`, `μ`) and state units explicitly when relevant.
+- Use an en-dash for dimensionless quantities and numeric ranges, for example
+  `(–)` and `0–1`.
 - Start field, argument, and keyword-argument descriptions with uppercase text.
-- End field, argument, return, throws, and descriptive note bullets with a
-  period. Omit periods for bare interface-method and See Also link lists.
+- End field, argument, return, throws, descriptive note bullets, and See Also
+  lines with a period. Omit periods for bare interface-method lists.
 - Use Documenter cross-references for public APIs, e.g. [`solve`](@ref).
 - Include only sections that add value for the documented symbol.
 - `# Notes` should only be included for non-obvious design decisions,
@@ -37,8 +39,8 @@ Use this template for docstrings across Albatross.jl.
 
 - For abstract interfaces, document expected methods under
   `# Interface Methods` using [`name`](@ref) links.
-- For struct fields, describe semantics and units even when fields are left
-  untyped in code.
+- For struct fields, include declared field types when present, and describe
+  semantics and units even when fields are left untyped in code.
 - For mutating APIs (`!` methods), document the in-place contract explicitly.
 - If a limitation is important for users, use a short `!!! note` block.
 
@@ -123,7 +125,7 @@ non-obvious behavior>.
 
 # See Also
 
-- [`related_fn`](@ref), [`other_fn!`](@ref)
+[`related_fn`](@ref), [`other_fn!`](@ref).
 """
 function function_name(arg1, arg2; kw1=default)
     ...
@@ -173,7 +175,7 @@ Update `<state>` in-place using `<input>`.
 
 # See Also
 
-- [`related_fn`](@ref), [`other_fn!`](@ref)
+[`related_fn`](@ref), [`other_fn!`](@ref).
 """
 function function_name!(state, input; ...)
     ...
@@ -189,8 +191,9 @@ Preferred sections:
 
 Do not document constructors in the type docstring.
 
-For structs with inferred/untyped fields, document expected value semantics,
-units, and invariants in `# Fields`.
+For structs with declared field types, include the type in the field entry. For
+structs with inferred/untyped fields, document expected value semantics, units,
+and invariants in `# Fields`.
 
 Example:
 
@@ -202,7 +205,7 @@ Example:
 
 # Fields
 
-- `field1`: Meaning, units, and expected value contract.
+- `field1::Type`: Meaning, units, and expected value contract.
 - `field2`: Meaning and relationship to other fields.
 
 # Notes

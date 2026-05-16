@@ -23,7 +23,7 @@ It acts as a thin wrapper around [`AbstractGrid1D`](@ref).
 
 # See Also
 
-[`AbstractSpanwiseGrid`](@ref), [`UniformGrid1D`](@ref), [`DMSTGrid`](@ref)
+[`AbstractSpanwiseGrid`](@ref), [`UniformGrid1D`](@ref), [`DMSTGrid`](@ref).
 """
 @concrete struct UniformSpanwiseGrid <: AbstractSpanwiseGrid
     grid <: UniformGrid1D
@@ -32,6 +32,10 @@ It acts as a thin wrapper around [`AbstractGrid1D`](@ref).
         UniformSpanwiseGrid(n::Integer, (z₀, zL))
 
     Create a uniform, cell-centered spanwise grid over `(z₀, zL)`.
+
+    # Throws
+
+    - `ArgumentError`: If `n` is not positive or `zL ≤ z₀`.
     """
     UniformSpanwiseGrid(n::Integer, (z0, zL)) = let
         g = UniformGrid1D(n, (z0, zL))
@@ -44,6 +48,11 @@ It acts as a thin wrapper around [`AbstractGrid1D`](@ref).
     Create a uniform, cell-centered spanwise grid for `turbine`.
 
     The span interval is taken as `(0, span(blades(turbine)))`.
+
+    # Throws
+
+    - `ArgumentError`: If `n` is not positive or the blade span is not
+      positive.
     """
     UniformSpanwiseGrid(turbine::AbstractDarrieusTurbine, n) =
         UniformSpanwiseGrid(n, (0, span(blades(turbine))))

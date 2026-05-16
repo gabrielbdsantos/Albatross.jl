@@ -92,7 +92,8 @@ span.
 
 # Fields
 
-- `section`: Blade section geometry used for the entire blade.
+- `section<:AbstractBladeSection`: Blade section geometry used for the entire
+  blade.
 - `span`: Total blade span (m).
 """
 @concrete struct UniformStraightBlade <: AbstractBladeGeometry

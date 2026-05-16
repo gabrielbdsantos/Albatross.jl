@@ -5,23 +5,24 @@ Precomputed runtime data for one DMST streamtube collocation point.
 
 # Fields
 
-- `θ`: azimuth collocation point (rad).
-- `Δθ`: azimuthal quadrature weight (rad).
-- `U_in`: incoming streamtube velocity used by the momentum balance (m/s).
-- `sinθ`: cached `sin(θ)` (–).
-- `cosθ`: cached `cos(θ)` (–).
-- `abs_sinθ`: cached `abs(sin(θ))` (–).
-- `ω`: rotor angular velocity (rad/s).
-- `c`: blade chord (m).
-- `R`: blade radial position (m).
-- `H`: blade span (m).
-- `U_inf`: free-stream inflow velocity (m/s).
-- `ρ`: fluid density (kg/m³).
-- `μ`: fluid dynamic viscosity (Pa·s).
-- `c_sound`: fluid speed of sound (m/s).
-- `B`: number of turbine blades (–).
-- `section`: blade section used for local aerodynamic evaluation.
-- `aerodynamics`: section aerodynamics model.
+- `θ`: Azimuth collocation point (rad).
+- `Δθ`: Azimuthal quadrature weight (rad).
+- `U_in`: Incoming streamtube velocity used by the momentum balance (m/s).
+- `sinθ`: Cached `sin(θ)` (–).
+- `cosθ`: Cached `cos(θ)` (–).
+- `abs_sinθ`: Cached `abs(sin(θ))` (–).
+- `ω`: Rotor angular velocity (rad/s).
+- `c`: Blade chord (m).
+- `R`: Blade radial position (m).
+- `H`: Blade span (m).
+- `U_inf`: Free-stream inflow velocity (m/s).
+- `ρ`: Fluid density (kg/m³).
+- `μ`: Fluid dynamic viscosity (Pa·s).
+- `c_sound`: Fluid speed of sound (m/s).
+- `B`: Number of turbine blades (–).
+- `section<:AbstractBladeSection`: Blade section used for local aerodynamic
+  evaluation.
+- `aerodynamics<:AbstractSectionAerodynamics`: Section aerodynamics model.
 """
 @concrete struct DMSTStreamtubeContext
     θ
