@@ -50,28 +50,28 @@ chord(b::AbstractBladeGeometry, z) = chord(section(b, z))
 
 
 """
-    ref_point(b::AbstractBladeGeometry, z)
+    reference_point(b::AbstractBladeGeometry, z)
 
 Return the section reference point in the local section reference frame.
 """
-ref_point(b::AbstractBladeGeometry, z) = ref_point(section(b, z))
+reference_point(b::AbstractBladeGeometry, z) = reference_point(section(b, z))
 
 """
-    radial_pos(b::AbstractBladeGeometry, z)
+    radial_position(b::AbstractBladeGeometry, z)
 
 Return the radial position of the section reference point measured from the
 rotor axis at spanwise coordinate `z` (m).
 """
-radial_pos(b::AbstractBladeGeometry, z) = radial_pos(section(b, z))
+radial_position(b::AbstractBladeGeometry, z) = radial_position(section(b, z))
 
 """
-    span_pos(b::AbstractBladeGeometry, z)
+    spanwise_position(b::AbstractBladeGeometry, z)
 
 Return the spanwise position of the section reference point (m).
 
 For many geometries this will be identical to the query coordinate `z`.
 """
-span_pos(b::AbstractBladeGeometry, z) = span_pos(section(b, z))
+spanwise_position(b::AbstractBladeGeometry, z) = spanwise_position(section(b, z))
 
 """
     pitch(b::AbstractBladeGeometry, z)

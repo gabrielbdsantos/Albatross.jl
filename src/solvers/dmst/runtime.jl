@@ -102,7 +102,7 @@ function build_streamtube_contexts(θ, Δθ, U_in, turbine, environment, aerodyn
                 abs_sinθ,
                 angular_velocity(kinematics(turbine), t),
                 chord(blade, z),
-                radial_pos(blade, z),
+                radial_position(blade, z),
                 span(blade),
                 velocity(environment.inflow),
                 density(environment.fluid),

@@ -41,7 +41,7 @@ function swept_area(t::UniformBladeHDarrieus)
     z = nothing
     blade = blades(t)
     H = span(blade)
-    R = radial_pos(section(blade, z))
+    R = radial_position(section(blade, z))
 
     return H * 2R
 end

@@ -28,9 +28,9 @@ function make_dmst_case(;
     blade_section = BladeSection(
         shape = KulfanParameters(coordinates(NACA4("0015"))),
         chord = 0.25,
-        ref_point = 0.25 / 4,
-        r = 1.0,
-        z = 0.0,
+        reference_point = 0.25 / 4,
+        radial_position = 1.0,
+        spanwise_position = 0.0,
         pitch = 0.0,
     )
 

@@ -48,9 +48,9 @@ section
 span
 shape
 chord
-ref_point
-radial_pos
-span_pos
+reference_point
+radial_position
+spanwise_position
 pitch
 ```
 
