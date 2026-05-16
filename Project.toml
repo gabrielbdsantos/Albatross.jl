@@ -3,6 +3,9 @@ uuid = "3ca8fdff-dd54-46a1-887c-183655a5fc91"
 authors = ["Gabriel B. Santos <gabriel.bertacco@unesp.br>"]
 version = "0.1.0"
 
+[workspace]
+projects = ['benchmark', 'docs', 'examples', 'test']
+
 [deps]
 ConcreteStructs = "2569d6c7-a4a2-43d3-a901-331e8e4be471"
 FillArrays = "1a297f60-69ca-5386-bcde-b61e274b549b"
