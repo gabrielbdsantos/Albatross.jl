@@ -8,7 +8,7 @@ struct RankineFroude <: AbstractMomentumTheory end
 
 wake_velocity_ratio(::RankineFroude, a) = 1 - 2 * a
 
-drag_coefficient(::RankineFroude, a) = begin
+thrust_coefficient(::RankineFroude, a) = begin
     a <= 0.4 ?
         4 * a * (1 - a) :
         0.889 - (0.0203 - (a - 0.143)^2) / 0.6427

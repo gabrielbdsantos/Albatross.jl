@@ -74,7 +74,7 @@ function solve_streamtubes_uncoupled!(
 
     for i in eachindex(contexts)
         residual(u, _) = (
-            drag_coefficient(momentum, u) - _streamtube_thrust_coefficient(u, contexts[i])
+            thrust_coefficient(momentum, u) - _streamtube_thrust_coefficient(u, contexts[i])
         )
 
         prob = NonlinearSolve.NonlinearProblem(residual, current_u)

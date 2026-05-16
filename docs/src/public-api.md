@@ -11,7 +11,7 @@ AbstractMomentumTheory
 RankineFroude
 SteirosHultmark
 wake_velocity_ratio
-drag_coefficient
+thrust_coefficient
 ```
 
 ## Environment

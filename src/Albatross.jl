@@ -43,6 +43,7 @@ export
     AbstractMomentumTheory,
     RankineFroude,
     SteirosHultmark,
+    thrust_coefficient,
 
     # Environment
     AbstractFluid,
