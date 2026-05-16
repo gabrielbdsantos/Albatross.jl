@@ -1,6 +1,6 @@
+using Test
 using Albatross
 using InteractiveUtils: subtypes
-using Test
 
 const DATA_DIR = joinpath(@__DIR__, "data")
 
@@ -12,15 +12,19 @@ const DATA_DIR = joinpath(@__DIR__, "data")
     end
 
     @testset "Code analysis" begin
-        import Aqua
-        import JET
-
         @testset "Code quality (Aqua.jl)" begin
+            import Aqua
             Aqua.test_all(Albatross)
         end
 
         @testset "Code linting (JET.jl)" begin
-            JET.test_package(Albatross; target_defined_modules = true)
+            import JET
+            kwargs = (
+                VERSION > v"1.12"
+                    ? (target_modules = (Albatross,),)
+                    : (target_defined_modules = true,)
+            )
+            JET.test_package(Albatross; kwargs...)
         end
     end
 end
