@@ -22,7 +22,7 @@ IncompressibleFluid
 ConstantPropertyFluid
 AbstractInflow
 UniformInflow
-EnvironmentConditions
+Environment
 density
 viscosity
 speed_of_sound

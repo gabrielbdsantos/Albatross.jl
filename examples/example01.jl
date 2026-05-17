@@ -2,7 +2,7 @@ using Albatross
 using AirfoilDefinitions
 using NNFoil: KulfanParameters
 
-environment = EnvironmentConditions(
+environment = Environment(
     ConstantPropertyFluid(),
     UniformInflow(10)
 )

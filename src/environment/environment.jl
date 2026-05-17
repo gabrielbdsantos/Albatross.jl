@@ -1,16 +1,16 @@
 """
-    EnvironmentConditions
+    Environment
 
-Ambient fluid and inflow conditions for rotor analyses.
+Environmental conditions for rotor analyses.
 
 # Fields
 
 - `fluid<:AbstractFluid`: Fluid thermophysical model.
 - `inflow<:AbstractInflow`: Prescribed inflow model.
 """
-@concrete struct EnvironmentConditions
+@concrete struct Environment
     fluid <: AbstractFluid
     inflow <: AbstractInflow
 end
 
-EnvironmentConditions(; fluid, inflow) = EnvironmentConditions(fluid, inflow)
+Environment(; fluid, inflow) = Environment(fluid, inflow)

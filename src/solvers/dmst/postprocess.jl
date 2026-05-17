@@ -11,7 +11,7 @@ Evaluate aerodynamic and performance fields at azimuth collocation points.
 - `Δθ`: Azimuthal weights (rad).
 - `U_in`: Incoming streamtube velocity used by the momentum balance (m/s).
 - `turbine`: Turbine model.
-- `environment`: Environmental conditions (fluid and inflow).
+- `environment`: Environmental conditions.
 - `aerodynamics`: Section aerodynamics model.
 
 # Returns

@@ -71,8 +71,7 @@ half-rotations.
 # Fields
 
 - `turbine<:AbstractDarrieusTurbine`: Darrieus turbine model to be solved.
-- `environment<:EnvironmentConditions`: Ambient/environmental conditions (fluid
-  and inflow).
+- `environment<:Environment`: Environmental conditions.
 - `momentum<:AbstractMomentumTheory`: Momentum/induction submodel used to
   relate induction to thrust.
 - `aerodynamics<:AbstractSectionAerodynamics`: Section aerodynamics model
@@ -88,7 +87,7 @@ half-rotations.
 """
 @concrete struct DMST <: AbstractSolver
     turbine <: AbstractDarrieusTurbine
-    environment <: EnvironmentConditions
+    environment <: Environment
     momentum <: AbstractMomentumTheory
     aerodynamics <: AbstractSectionAerodynamics
     grid <: DMSTGrid

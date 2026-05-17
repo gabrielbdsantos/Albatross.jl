@@ -6,7 +6,7 @@ using NNFoil: KulfanParameters
 include("utils.jl")
 
 function make_case()
-    environment = EnvironmentConditions(
+    environment = Environment(
         ConstantPropertyFluid(),
         UniformInflow(10.0),
     )

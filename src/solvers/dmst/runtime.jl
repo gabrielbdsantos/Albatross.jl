@@ -62,8 +62,7 @@ aerodynamic model data.
   balance (m/s).
 - `turbine`: turbine model supplying blade geometry, kinematics, and blade
   count.
-- `environment`: environmental conditions supplying inflow and fluid
-  properties.
+- `environment`: Environmental conditions.
 - `aerodynamics`: section aerodynamics model used by each streamtube.
 
 # Returns

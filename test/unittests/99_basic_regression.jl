@@ -20,7 +20,7 @@ function make_dmst_case(;
         momentum = RankineFroude(),
         options = DMSTSolverOptions()
     )
-    environment = EnvironmentConditions(
+    environment = Environment(
         ConstantPropertyFluid(),
         UniformInflow(10.0),
     )

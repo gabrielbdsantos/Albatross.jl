@@ -51,7 +51,7 @@ export
     IncompressibleFluid,
     AbstractInflow,
     UniformInflow,
-    EnvironmentConditions,
+    Environment,
 
     # Kinematics
     AbstractRotorKinematics,

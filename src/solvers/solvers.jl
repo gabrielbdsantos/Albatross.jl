@@ -4,8 +4,8 @@
 Abstract supertype for aerodynamic and performance solvers.
 
 A subtype of `AbstractSolver` represents a complete numerical procedure that
-evaluates a turbine model under given environmental and operating conditions
-(e.g. DMST, BEM-like, or other rotor solvers).
+evaluates a turbine model under given environment and operating conditions
+(e.g. DMST, Actuator Cylinder, or other rotor solvers).
 
 This abstraction defines the solver algorithm itself and is independent of the
 turbine geometry, inflow, and fluid models, which are provided as inputs to
