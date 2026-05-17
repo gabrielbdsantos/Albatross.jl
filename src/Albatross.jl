@@ -29,6 +29,7 @@ include("turbine/turbine.jl")
 include("turbine/h_darrieus.jl")
 
 include("aerodynamics/aerodynamics.jl")
+include("aerodynamics/neuralfoil.jl")
 
 include("grid/grid.jl")
 include("grid/azimuthal.jl")
