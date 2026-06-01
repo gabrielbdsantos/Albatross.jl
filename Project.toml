@@ -1,16 +1,14 @@
 name = "Albatross"
 uuid = "3ca8fdff-dd54-46a1-887c-183655a5fc91"
-version = "0.1.1"
 authors = ["Gabriel B. Santos <gabriel.bertacco@unesp.br>"]
-
-[workspace]
-projects = ["benchmark", "docs", "examples", "test"]
+version = "0.1.1"
 
 [deps]
 ConcreteStructs = "2569d6c7-a4a2-43d3-a901-331e8e4be471"
 FillArrays = "1a297f60-69ca-5386-bcde-b61e274b549b"
 NNFoil = "5d96e3f7-5e7b-44ae-828e-526bf7f0e78d"
 NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
 
 [sources]
@@ -21,5 +19,9 @@ ConcreteStructs = "0.2.3"
 FillArrays = "1.16.0"
 NNFoil = "0.3.3"
 NonlinearSolve = "4.15.0"
+Plots = "1.41.6"
 StructArrays = "0.7.3"
 julia = "1.11"
+
+[workspace]
+projects = ["benchmark", "docs", "examples", "test"]
