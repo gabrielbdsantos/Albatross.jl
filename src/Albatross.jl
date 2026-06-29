@@ -1,6 +1,6 @@
 """
-Main module for `Albatross.jl` -- a Julia software for reduced-order analysis
-of vertical-axis wind turbines.
+`Albatross.jl` -- a Julia package for reduced-order analysis of vertical-axis
+    wind turbines.
 """
 module Albatross
 

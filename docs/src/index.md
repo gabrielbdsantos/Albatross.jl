@@ -1,6 +1,6 @@
 # Albatross.jl
 
-Albatross is a Julia software for reduced-order analysis of vertical-axis wind
+Albatross is a Julia package for reduced-order analysis of vertical-axis wind
 turbines.
 
 !!! warning "WARNING"
