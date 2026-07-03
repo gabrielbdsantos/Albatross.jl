@@ -39,6 +39,19 @@ For usage examples see the
 [`examples/`](https://github.com/gabrielbdsantos/Albatross.jl/tree/main/examples)
 directory.
 
+## Contributing
+
+Contributions, questions, bug reports, and ideas are very welcome. If you are
+unsure where to start, feel free to open a
+[Discussion](https://github.com/gabrielbdsantos/Albatross.jl/discussions) for
+questions, usage help, or early design ideas. For confirmed bugs and concrete
+enhancement requests, please open an
+[Issue](https://github.com/gabrielbdsantos/Albatross.jl/issues).
+
+Before opening a pull request, please read
+[`CONTRIBUTING.md`](./CONTRIBUTING.md). Everyone participating in the project
+is expected to follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
+
 ## License
 
 Albatross.jl is released under the terms of the MIT license. See the
