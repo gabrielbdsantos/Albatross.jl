@@ -1,6 +1,6 @@
-<h1 align="center">
-    Albatross.jl
-</h1>
+<p align="center">
+  <img src="./docs/src/assets/logo.svg" alt="Albatross.jl">
+</p>
 
 <div align="center">
 

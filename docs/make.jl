@@ -16,6 +16,7 @@ makedocs(;
             "assets/custom.css",
             "assets/citations.css",
         ],
+        sidebar_sitename = false,
     ),
     plugins = [
         CitationBibliography(
