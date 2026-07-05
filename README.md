@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./docs/src/assets/logo.svg" alt="Albatross.jl">
+  <img src="./docs/src/assets/logo.png" alt="Albatross.jl">
 </p>
 
 <div align="center">
