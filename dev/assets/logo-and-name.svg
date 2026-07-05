@@ -2,14 +2,14 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="93.212509mm"
-   height="42.690044mm"
-   viewBox="0 0 93.212509 42.690044"
+   width="92.50695mm"
+   height="42.337269mm"
+   viewBox="0 0 92.50695 42.337268"
    version="1.1"
    id="svg1"
    xml:space="preserve"
    inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
-   sodipodi:docname="logo.svg"
+   sodipodi:docname="logo-and-name.svg"
    inkscape:export-filename="logo.png"
    inkscape:export-xdpi="100"
    inkscape:export-ydpi="100"
@@ -26,11 +26,11 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:export-bgcolor="#ffffffff"
+     inkscape:export-bgcolor="#ffffff00"
      inkscape:zoom="1.3970481"
-     inkscape:cx="168.21182"
+     inkscape:cx="220.46485"
      inkscape:cy="164.27495"
-     inkscape:window-width="1884"
+     inkscape:window-width="1196"
      inkscape:window-height="1002"
      inkscape:window-x="16"
      inkscape:window-y="58"
@@ -121,7 +121,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-51.758287,-4.4256042)"><g
+     transform="translate(-52.111065,-4.4256042)"><g
        id="g20"
        transform="translate(77.494762,-50.090268)"
        clip-path="url(#clipPath5)"
@@ -184,7 +184,7 @@
        y="43.061272"
        id="text2-0-9"><tspan
          sodipodi:role="line"
-         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.705556;stroke-dasharray:none"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.705556;stroke-dasharray:none"
          x="52.102802"
          y="43.061272"
          id="tspan3-6-0">Albatross.jl</tspan></text></g></svg>
