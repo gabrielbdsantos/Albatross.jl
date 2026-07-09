@@ -1,16 +1,14 @@
-# Example for a straight-bladed vertical axis wind turbine (VAWT)
-# based on the experimental turbine reported by Li et al. in
-# *Study on power performance for straight-bladed vertical axis
-# wind turbine by field and wind tunnel test* (Renewable Energy, 2016).
-#
-# This example sets up a two-bladed H-Darrieus turbine with fixed pitch,
-# NACA 0021 airfoil section, and the DMST workflow used to estimate the
-# power coefficient as a function of tip-speed ratio.
-#
-# # References
-# - Q. Li et al., "Study on power performance for straight-bladed vertical
-#   axis wind turbine by field and wind tunnel test," Renewable Energy, vol.
-#   90, pp. 291–300, 2016, doi: 10.1016/j.renene.2016.01.002.
+"""
+Example of a straight-bladed Darrieus turbine based on the experimental study
+by Li et al. (2016).
+
+# Reference
+
+1. Q. Li et al., "Study on power performance for straight-bladed vertical axis
+   wind turbine by field and wind tunnel test," Renewable Energy, vol. 90, pp.
+   291–300, 2016, doi: 10.1016/j.renene.2016.01.002.
+"""
+
 using Albatross
 using AirfoilDefinitions
 using NNFoil: KulfanParameters
@@ -66,17 +64,17 @@ for omega in omegas
         azimuthal = UniformAzimuthalGrid(36),
         spanwise = UniformSpanwiseGrid(turbine, 1)
     )
-    tsr_local = omega * blade_section.radial_position / environment.inflow.U
+    current_tsr = omega * blade_section.radial_position / environment.inflow.U
     solidity = turbine.num_blades * blade_section.chord / blade_section.radial_position
     dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options)
     solution = solve(dmst)
     solution_fields = evaluate_streamtube_fields(solution)
 
-    append!(tsr, tsr_local)
+    append!(tsr, current_tsr)
     append!(cp, sum(solution_fields.Cp))
 end
 
 # # Uncomment to plot the Cp x TSR curve
 # using Plots
-# display(plot(tsr_plot, cp_plot, xlabel = "TSR", ylabel = "Cp", label = "Standard DMST", dpi = 600, lw = 3))
+# display(plot(tsr, cp, xlabel = "TSR", ylabel = "Cp", label = "Albatross.jl", dpi = 600, lw = 3))
 # display(scatter!(tsr_exp, cp_exp, label = "Experimental", lw = 3, mc = :black))

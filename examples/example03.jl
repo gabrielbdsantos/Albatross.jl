@@ -1,18 +1,15 @@
-# Example for a straight-bladed vertical axis wind turbine (VAWT)
-# based on the experimental turbine reported by Li et al. in
-# *Power coefficient measurement on a 12 kW straight bladed vertical
-# axis wind turbine* (Renewable Energy, 2011).
-#
-# The example sets up a 3-bladed H-Darrieus turbine with fixed pitch,
-# NACA 0021 airfoil section, and the DMST workflow used to estimate the
-# power coefficient as a function of tip-speed ratio.
-#
-# # References
-#
-# [1] J. Kjellin, F. Bülow, S. Eriksson, P. Deglaire, M. Leijon, and H.
-#     Bernhoff, "Power coefficient measurement on a 12 kW straight bladed
-#     vertical axis wind turbine,” Renewable Energy, vol. 36, no. 11,
-#     pp. 3050–3053, 2011, doi: 10.1016/j.renene.2011.03.031.
+"""
+Example of a straight-bladed Darrieus turbine based on the experimental study
+by Kjellin et al. (2011).
+
+# Reference
+
+1. J. Kjellin, F. Bülow, S. Eriksson, P. Deglaire, M. Leijon, and H. Bernhoff,
+   "Power coefficient measurement on a 12 kW straight bladed vertical axis wind
+   turbine," Renewable Energy, vol. 36, no. 11, pp. 3050–3053, 2011, doi:
+   10.1016/j.renene.2011.03.031.
+"""
+
 using Albatross
 using AirfoilDefinitions
 using NNFoil: KulfanParameters
@@ -55,9 +52,9 @@ momentum = SteirosHultmark()
 
 options = DMSTSolverOptions()
 
+tsr = Float64[]
+cp = Float64[]
 omegas = 6.0:1.0:17.0
-tsr_plot = Float64[]
-cp_plot = Float64[]
 
 for omega in omegas
     kinematics = ConstantAngularVelocity(omega)
@@ -70,21 +67,17 @@ for omega in omegas
         azimuthal = UniformAzimuthalGrid(36),
         spanwise = UniformSpanwiseGrid(turbine, 1)
     )
-    tsr = omega * blade_section.radial_position / environment.inflow.U
+    current_tsr = omega * blade_section.radial_position / environment.inflow.U
     solidity = turbine.num_blades * blade_section.chord / blade_section.radial_position
     dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options)
     solution = solve(dmst)
     solution_fields = evaluate_streamtube_fields(solution)
 
-    append!(tsr_plot, tsr)
-    append!(cp_plot, sum(solution_fields.Cp))
+    append!(tsr, current_tsr)
+    append!(cp, sum(solution_fields.Cp))
 end
 
 # If needed, you can plot the Cp x TSR curve by using Plots package
-#=
-using Plots
-
-display(plot(tsr_plot, cp_plot, xlabel="TSR", ylabel="Cp", label="Standard", dpi=600, lw=3))
-
-display(scatter!(tsr_exp, cp_exp, label="Experimental", lw=3, mc=:black))
-=#
+#using Plots
+#display(plot(tsr, cp, xlabel = "TSR", ylabel = "Cp", label = "Albatross.jl", dpi = 600, lw = 3))
+#display(scatter!(tsr_exp, cp_exp, label = "Experimental", lw = 3, mc = :black))
