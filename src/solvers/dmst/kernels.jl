@@ -6,7 +6,7 @@ function _local_kinematics(a, U_in, ω, R, sinθ, cosθ, β)
     Vn = @. -U_a * sinθ
 
     U_r = @. sqrt(Vt^2 + Vn^2)
-    aoa = @. atan(Vn, -Vt) + β
+    aoa = @. atan(Vn, -Vt) - β
 
     return (; U_r, aoa)
 end
@@ -65,7 +65,7 @@ function _local_kinematics(a, ctx::DMSTStreamtubeContext)
     Vn = -U_a * ctx.sinθ
 
     U_r = sqrt(Vt^2 + Vn^2)
-    aoa = atan(Vn, -Vt) + pitch(ctx.section)
+    aoa = atan(Vn, -Vt) - pitch(ctx.section)
 
     return (; U_r, aoa)
 end

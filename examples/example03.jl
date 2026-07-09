@@ -38,7 +38,7 @@ blade_section = BladeSection(
     reference_point = 0.25 / 5,
     radial_position = 3.24,
     spanwise_position = 0.0,
-    pitch = deg2rad(2.0)
+    pitch = deg2rad(-2.0)
 )
 
 aerodynamics = NeuralSectionAerodynamics(; model_size = :xsmall)
