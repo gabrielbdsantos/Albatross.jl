@@ -131,10 +131,3 @@ function aerodynamic_coefficients(
     )
     return x.CL, x.CD
 end
-
-aerodynamic_coefficients(
-    model::AbstractVector{<:NeuralSectionAerodynamics},
-    section::AbstractVector{<:AbstractBladeSection},
-    aoa,
-    Re
-) = aerodynamic_coefficients(first(model), first(section), aoa, Re)

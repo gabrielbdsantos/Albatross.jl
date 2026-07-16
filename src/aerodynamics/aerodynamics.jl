@@ -28,3 +28,10 @@ Concrete models must implement this method and return aerodynamic coefficients
 compatible with downstream solver usage.
 """
 function aerodynamic_coefficients end
+
+aerodynamic_coefficients(
+    model::AbstractVector{<:AbstractSectionAerodynamics},
+    section::AbstractVector{<:AbstractBladeSection},
+    aoa,
+    Re
+) = aerodynamic_coefficients(first(model), first(section), aoa, Re)
