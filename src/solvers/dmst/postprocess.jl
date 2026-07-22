@@ -22,8 +22,8 @@ Evaluate aerodynamic and performance fields at azimuth collocation points.
 
 [`build_streamtube_contexts`](@ref), [`DMSTStreamtubeFields`](@ref).
 """
-function evaluate_streamtube_fields(a, θ, Δθ, U_in, turbine, environment, aerodynamics)
-    ctxs = build_streamtube_contexts(θ, Δθ, U_in, turbine, environment, aerodynamics)
+function evaluate_streamtube_fields(a, θ, Δθ, U_in, turbine, environment, aerodynamics, loss)
+    ctxs = build_streamtube_contexts(θ, Δθ, U_in, turbine, environment, aerodynamics, loss)
     return evaluate_streamtube_fields(a, ctxs)
 end
 
@@ -51,6 +51,7 @@ precomputed streamtube context collection.
 """
 function evaluate_streamtube_fields(a, ctxs::AbstractVector{<:DMSTStreamtubeContext})
     U_r, aoa = _local_kinematics(a, ctxs.U_in, ctxs.ω, ctxs.R, ctxs.sinθ, ctxs.cosθ, pitch.(ctxs.section))
+    aoa = _apply_curvature.(ctxs.loss, aoa, U_r, ctxs.ω, ctxs.R, ctxs.c, ctxs.section)
     Re, Ma, Cl, Cd = _local_aerodynamics(
         U_r, aoa, ctxs.c, ctxs.ρ, ctxs.μ, ctxs.v_sound,
         ctxs.aerodynamics, ctxs.section

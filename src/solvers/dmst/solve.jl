@@ -44,7 +44,8 @@ function solve(dmst::DMST)
         U_inf,
         dmst.turbine,
         dmst.environment,
-        dmst.aerodynamics
+        dmst.aerodynamics,
+        dmst.loss
     )
     solve_streamtubes_uncoupled!(a_up, stats_up, ctxs_up, dmst.momentum, dmst.options)
 
@@ -55,7 +56,8 @@ function solve(dmst::DMST)
         U_wake,
         dmst.turbine,
         dmst.environment,
-        dmst.aerodynamics
+        dmst.aerodynamics,
+        dmst.loss
     )
     solve_streamtubes_uncoupled!(a_down, stats_down, ctxs_down, dmst.momentum, dmst.options)
 
@@ -109,6 +111,7 @@ end
 
 function _streamtube_thrust_coefficient(a, ctx::DMSTStreamtubeContext)
     U_r, aoa = _local_kinematics(a, ctx)
+    aoa = _apply_curvature(aoa, U_r, ctx)
     _, _, Cl, Cd = _local_aerodynamics(U_r, aoa, ctx)
     Ct, Cn = _section_force_coefficients(aoa, Cl, Cd)
     _, Cth = _section_thrust(U_r, Ct, Cn, ctx)
