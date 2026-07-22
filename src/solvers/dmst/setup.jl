@@ -92,8 +92,9 @@ half-rotations.
     aerodynamics <: AbstractSectionAerodynamics
     grid <: DMSTGrid
     options <: DMSTSolverOptions
+    loss <: Union{LossModels, Nothing}
 end
 
 DMST(;
-    turbine, environment, momentum, aerodynamics, grid, options = DMSTSolverOptions()
-) = DMST(turbine, environment, momentum, aerodynamics, grid, options)
+    turbine, environment, momentum, aerodynamics, grid, options, loss = DMSTSolverOptions()
+) = DMST(turbine, environment, momentum, aerodynamics, grid, options, loss)
