@@ -52,6 +52,11 @@ momentum = SteirosHultmark()
 
 options = DMSTSolverOptions()
 
+# Uncomment to activate the loss models
+loss = LossModels(
+#    curvature = Bangga()
+)
+
 tsr = Float64[]
 cp = Float64[]
 omegas = 6.0:1.0:17.0
@@ -69,7 +74,7 @@ for omega in omegas
     )
     current_tsr = omega * blade_section.radial_position / environment.inflow.U
     solidity = turbine.num_blades * blade_section.chord / blade_section.radial_position
-    dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options)
+    dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options, loss)
     solution = solve(dmst)
     solution_fields = evaluate_streamtube_fields(solution)
 

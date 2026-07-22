@@ -40,7 +40,12 @@ grid = DMSTGrid(
 
 options = DMSTSolverOptions()
 
-dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options)
+# Uncomment to activate the loss models
+loss = LossModels(
+#    curvature = Bangga()
+)
+
+dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options, loss)
 
 solution = solve(dmst)
 solution_fields = evaluate_streamtube_fields(solution)
