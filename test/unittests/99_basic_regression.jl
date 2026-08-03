@@ -51,6 +51,10 @@ function make_dmst_case(;
         spanwise = UniformSpanwiseGrid(turbine, 1),
     )
 
+    loss = LossModels(
+        #curvature = Bangga()
+    )
+    
     return DMST(
         turbine = turbine,
         environment = environment,
@@ -58,6 +62,7 @@ function make_dmst_case(;
         aerodynamics = aerodynamics,
         grid = grid,
         options = options,
+        loss = loss,
     )
 end
 
