@@ -37,6 +37,7 @@ include("grid/spanwise.jl")
 
 include("loss/curvature/curvature.jl")
 include("loss/curvature/Bangga.jl")
+include("loss/curvature/Goude.jl")
 include("loss/loss.jl")
 
 include("solvers/solvers.jl")
@@ -89,6 +90,7 @@ export
     LossModels,
     AbstractCurvatureCorrection,
     Bangga,
+    Goude,
 
     # Solvers
     AbstractSolver,
