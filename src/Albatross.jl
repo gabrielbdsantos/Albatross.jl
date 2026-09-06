@@ -35,11 +35,6 @@ include("grid/grid.jl")
 include("grid/azimuthal.jl")
 include("grid/spanwise.jl")
 
-include("loss/curvature/curvature.jl")
-include("loss/curvature/Bangga.jl")
-include("loss/curvature/Goude.jl")
-include("loss/loss.jl")
-
 include("solvers/solvers.jl")
 include("solvers/dmst/dmst.jl")
 
@@ -86,9 +81,10 @@ export
     AbstractSpanwiseGrid,
     UniformSpanwiseGrid,
 
-    # Loss
-    LossModels,
+    # DMST submodels
+    DMSTSubmodels,
     AbstractCurvatureCorrection,
+    aoa_correction,
     Bangga,
     Goude,
 

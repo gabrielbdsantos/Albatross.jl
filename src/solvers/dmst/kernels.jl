@@ -57,12 +57,11 @@ function _section_power(Q, ω, H, R, ρ, U_inf, Δθ, B)
     return (; P, Cp)
 end
 
-_apply_curvature(loss::LossModels, aoa, U_r, ω, R, c, section) = begin
+_apply_curvature(submodels::DMSTSubmodels, aoa, U_r, ω, R, c, section) = begin
     m = reference_point(section)
     β = pitch(section)
-    @. aoa + aoa_correction(loss.curvature, ω, R, m, c, β, U_r)
+    @. aoa + aoa_correction(submodels.curvature, ω, R, m, c, β, U_r)
 end
-_apply_curvature(::Nothing, aoa, ω, R, c, section, U_r) = aoa
 # }}}
 # Context-based methods {{{
 function _local_kinematics(a, ctx::DMSTStreamtubeContext)
@@ -116,12 +115,12 @@ function _section_power(Q, ctx::DMSTStreamtubeContext)
     return (; P, Cp)
 end
 
-_apply_curvature(aoa, U_r, ctx::DMSTStreamtubeContext) = _apply_curvature(ctx.loss, aoa, U_r, ctx)
+_apply_curvature(aoa, U_r, ctx::DMSTStreamtubeContext) =
+    _apply_curvature(ctx.submodels, aoa, U_r, ctx)
 
-_apply_curvature(loss::LossModels, aoa, U_r, ctx::DMSTStreamtubeContext) = begin
+_apply_curvature(submodels::DMSTSubmodels, aoa, U_r, ctx::DMSTStreamtubeContext) = begin
     m = reference_point(ctx.section)
     β = pitch(ctx.section)
-    @. aoa + aoa_correction(loss.curvature, ctx.ω, ctx.R, m, ctx.c, β, U_r)
+    @. aoa + aoa_correction(submodels.curvature, ctx.ω, ctx.R, m, ctx.c, β, U_r)
 end
-_apply_curvature(::Nothing, aoa, U_r, ctx::DMSTStreamtubeContext) = aoa
 # }}}

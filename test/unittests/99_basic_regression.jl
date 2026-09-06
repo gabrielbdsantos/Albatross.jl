@@ -18,7 +18,8 @@ end
 
 function make_dmst_case(;
         momentum = RankineFroude(),
-        options = DMSTSolverOptions()
+        options = DMSTSolverOptions(),
+        submodels = DMSTSubmodels(),
     )
     environment = Environment(
         ConstantPropertyFluid(),
@@ -51,10 +52,6 @@ function make_dmst_case(;
         spanwise = UniformSpanwiseGrid(turbine, 1),
     )
 
-    loss = LossModels(
-        #curvature = Bangga()
-    )
-    
     return DMST(
         turbine = turbine,
         environment = environment,
@@ -62,7 +59,7 @@ function make_dmst_case(;
         aerodynamics = aerodynamics,
         grid = grid,
         options = options,
-        loss = loss,
+        submodels = submodels,
     )
 end
 

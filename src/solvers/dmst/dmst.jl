@@ -1,3 +1,4 @@
+include("submodels/submodels.jl")
 include("setup.jl")
 include("stats.jl")
 include("runtime.jl")

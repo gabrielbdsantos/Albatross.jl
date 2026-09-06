@@ -30,16 +30,17 @@ function make_case()
         azimuthal = UniformAzimuthalGrid(36),
         spanwise = UniformSpanwiseGrid(turbine, 1),
     )
-    loss = LossModels(
-        #curvature = Bangga()
-    )
+    options = DMSTSolverOptions()
+    submodels = DMSTSubmodels()
+
     return DMST(
         turbine = turbine,
         environment = environment,
         momentum = momentum,
         aerodynamics = aerodynamics,
         grid = grid,
-        loss = loss,
+        options = options,
+        submodels = submodels,
     )
 end
 

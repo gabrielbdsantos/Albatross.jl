@@ -45,7 +45,7 @@ function solve(dmst::DMST)
         dmst.turbine,
         dmst.environment,
         dmst.aerodynamics,
-        dmst.loss
+        dmst.submodels
     )
     solve_streamtubes_uncoupled!(a_up, stats_up, ctxs_up, dmst.momentum, dmst.options)
 
@@ -57,7 +57,7 @@ function solve(dmst::DMST)
         dmst.turbine,
         dmst.environment,
         dmst.aerodynamics,
-        dmst.loss
+        dmst.submodels
     )
     solve_streamtubes_uncoupled!(a_down, stats_down, ctxs_down, dmst.momentum, dmst.options)
 
