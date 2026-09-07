@@ -39,8 +39,9 @@ grid = DMSTGrid(
 )
 
 options = DMSTSolverOptions()
+submodels = DMSTSubmodels()
 
-dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options)
+dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options, submodels)
 
 solution = solve(dmst)
 solution_fields = evaluate_streamtube_fields(solution)

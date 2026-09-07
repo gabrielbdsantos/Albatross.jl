@@ -81,6 +81,13 @@ export
     AbstractSpanwiseGrid,
     UniformSpanwiseGrid,
 
+    # DMST submodels
+    DMSTSubmodels,
+    AbstractCurvatureCorrection,
+    aoa_correction,
+    Bangga,
+    Goude,
+
     # Solvers
     AbstractSolver,
     solve,

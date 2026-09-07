@@ -23,6 +23,7 @@ Precomputed runtime data for one DMST streamtube collocation point.
 - `section<:AbstractBladeSection`: Blade section used for local aerodynamic
   evaluation.
 - `aerodynamics<:AbstractSectionAerodynamics`: Section aerodynamics model.
+- `submodels<:DMSTSubmodels`: Submodels that modify the DMST evaluation.
 """
 @concrete struct DMSTStreamtubeContext
     θ
@@ -46,10 +47,13 @@ Precomputed runtime data for one DMST streamtube collocation point.
 
     section <: AbstractBladeSection
     aerodynamics <: AbstractSectionAerodynamics
+    submodels <: DMSTSubmodels
 end
 
 """
-    build_streamtube_contexts(θ, Δθ, U_in, turbine, environment, aerodynamics)
+    build_streamtube_contexts(
+        θ, Δθ, U_in, turbine, environment, aerodynamics, submodels
+    )
 
 Build DMST streamtube runtime contexts from grid, turbine, environment, and
 aerodynamic model data.
@@ -64,6 +68,7 @@ aerodynamic model data.
   count.
 - `environment`: Environmental conditions.
 - `aerodynamics`: section aerodynamics model used by each streamtube.
+- `submodels::DMSTSubmodels`: Submodels that modify the DMST evaluation.
 
 # Returns
 
@@ -75,7 +80,9 @@ aerodynamic model data.
 - Scalar inputs that are shared by all streamtubes are stored as lazy fills
   using `FillArrays.Fill`; vector inputs are kept as streamtube-varying data.
 """
-function build_streamtube_contexts(θ, Δθ, U_in, turbine, environment, aerodynamics)
+function build_streamtube_contexts(
+        θ, Δθ, U_in, turbine, environment, aerodynamics, submodels
+    )
     z = nothing
     t = nothing
 
@@ -110,6 +117,7 @@ function build_streamtube_contexts(θ, Δθ, U_in, turbine, environment, aerodyn
                 num_blades(turbine),
                 blade_section,
                 aerodynamics,
+                submodels,
             )
         )
     )

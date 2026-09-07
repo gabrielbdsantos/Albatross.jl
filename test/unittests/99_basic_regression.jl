@@ -18,7 +18,8 @@ end
 
 function make_dmst_case(;
         momentum = RankineFroude(),
-        options = DMSTSolverOptions()
+        options = DMSTSolverOptions(),
+        submodels = DMSTSubmodels(),
     )
     environment = Environment(
         ConstantPropertyFluid(),
@@ -58,6 +59,7 @@ function make_dmst_case(;
         aerodynamics = aerodynamics,
         grid = grid,
         options = options,
+        submodels = submodels,
     )
 end
 

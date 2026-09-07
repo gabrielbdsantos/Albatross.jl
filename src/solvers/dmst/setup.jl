@@ -80,6 +80,7 @@ half-rotations.
   weights).
 - `options<:DMSTSolverOptions`: Numerical controls for convergence tolerances,
   iteration limits, and induction bounds.
+- `submodels<:DMSTSubmodels`: Submodels that modify the DMST evaluation.
 
 # See Also
 
@@ -92,8 +93,15 @@ half-rotations.
     aerodynamics <: AbstractSectionAerodynamics
     grid <: DMSTGrid
     options <: DMSTSolverOptions
+    submodels <: DMSTSubmodels
 end
 
 DMST(;
-    turbine, environment, momentum, aerodynamics, grid, options = DMSTSolverOptions()
-) = DMST(turbine, environment, momentum, aerodynamics, grid, options)
+    turbine,
+    environment,
+    momentum,
+    aerodynamics,
+    grid,
+    options = DMSTSolverOptions(),
+    submodels = DMSTSubmodels(),
+) = DMST(turbine, environment, momentum, aerodynamics, grid, options, submodels)

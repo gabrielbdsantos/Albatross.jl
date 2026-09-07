@@ -49,8 +49,8 @@ blade = UniformStraightBlade(
 )
 
 momentum = SteirosHultmark()
-
 options = DMSTSolverOptions()
+submodels = DMSTSubmodels()
 
 tsr = Float64[]
 cp = Float64[]
@@ -69,7 +69,7 @@ for omega in omegas
     )
     current_tsr = omega * blade_section.radial_position / environment.inflow.U
     solidity = turbine.num_blades * blade_section.chord / blade_section.radial_position
-    dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options)
+    dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options, submodels)
     solution = solve(dmst)
     solution_fields = evaluate_streamtube_fields(solution)
 

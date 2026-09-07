@@ -104,11 +104,21 @@ DMST
 DMSTGrid
 DMSTSolverOptions
 DMSTSolveStats
+DMSTSubmodels
 DMSTStreamtubeContext
-build_streamtube_contexts
 DMSTNonlinearSolution
 DMSTStreamtubeFields
+build_streamtube_contexts
 evaluate_streamtube_fields
+```
+
+### Curvature Correction
+
+```@docs
+AbstractCurvatureCorrection
+Bangga
+Goude
+aoa_correction
 ```
 
 ## Utilities
