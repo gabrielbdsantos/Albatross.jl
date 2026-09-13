@@ -110,10 +110,10 @@ function solve_streamtubes_uncoupled!(
 end
 
 function _streamtube_thrust_coefficient(a, ctx::DMSTStreamtubeContext)
-    U_r, aoa = _local_kinematics(a, ctx)
-    aoa = _apply_curvature(aoa, U_r, ctx)
+    U_r, φ = _local_kinematics(a, ctx)
+    aoa = _effective_aoa(φ, U_r, ctx)
     _, _, Cl, Cd = _local_aerodynamics(U_r, aoa, ctx)
-    Ct, Cn = _section_force_coefficients(aoa, Cl, Cd)
+    Ct, Cn = _section_force_coefficients(φ, Cl, Cd)
     _, Cth = _section_thrust(U_r, Ct, Cn, ctx)
     return Cth
 end

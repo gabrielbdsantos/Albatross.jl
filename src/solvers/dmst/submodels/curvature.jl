@@ -14,7 +14,8 @@ Base.broadcastable(m::AbstractCurvatureCorrection) = Ref(m)
 """
     aoa_correction(model, ω, r, m, c, αₚ, U_r)
 
-Compute the curvature-induced correction to the local angle of attack (rad).
+Compute the curvature-induced correction `Δα` to the effective local angle of
+attack (rad).
 
 # Arguments
 
@@ -35,19 +36,21 @@ aoa_correction(::Nothing, ω, r, m, c, αₚ, U_r) = 0
 """
     Bangga()
 
-Bangga curvature correction model for the local angle of attack
+Bangga curvature correction model for the effective local angle of attack
 [bangga2019improved](@cite).
 """
 struct Bangga <: AbstractCurvatureCorrection end
 
-aoa_correction(::Bangga, ω, r, m, c, αₚ, U_r) =
-    -atan(ω * m * cos(αₚ), ω * (r + m * sin(αₚ)))
+aoa_correction(::Bangga, ω, r, m, c, αₚ, U_r) = -atan(
+    ω * m * cos(αₚ),
+    ω * (r + m * sin(αₚ))
+)
 
 
 """
     Goude()
 
-Goude curvature correction model for the local angle of attack
+Goude curvature correction model for the effective local angle of attack
 [dyachuk2015simulating](@cite).
 """
 struct Goude <: AbstractCurvatureCorrection end

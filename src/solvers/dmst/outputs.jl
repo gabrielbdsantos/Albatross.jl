@@ -38,19 +38,31 @@ Aerodynamic and performance fields evaluated at streamtube collocation points.
 - `a`: Axial induction factor (–).
 - `θ`: Azimuth angle (rad).
 - `U_r`: Relative velocity magnitude at the section (m/s).
-- `aoa`: Angle of attack (rad).
+- `φ`: Relative flow angle in the rotor frame (rad).
+- `aoa`: Effective angle of attack used for aerodynamic coefficient evaluation
+  (rad).
 - `Re`: Reynolds number (–).
 - `Ma`: Mach number (–).
 - `Cl`: Lift coefficient (–).
 - `Cd`: Drag coefficient (–).
-- `Ct`: Tangential force coefficient in rotor/blade axes (–).
-- `Cn`: Normal force coefficient in rotor/blade axes (–).
+- `Ct`: Tangential force coefficient in rotor frame (–).
+- `Cn`: Normal force coefficient in rotor frame (–).
 - `Th`: Instantaneous thrust/normal load contribution (N).
 - `Q`: Instantaneous torque (N·m).
 - `P`: Instantaneous power (W).
 - `Cth`: Instantaneous thrust coefficient contribution (–).
 - `Cq`: Instantaneous torque coefficient (–).
 - `Cp`: Instantaneous power coefficient contribution (–).
+
+# Notes
+
+- `φ` is the relative-flow angle in the rotor frame, used to project lift and
+  drag into tangential and normal directions in the rotor frame.
+
+- `aoa` is the effective angle of attack used to evaluate the aerodynamic
+  coefficients, which is computed as `aoa = φ - β + Δα`, where `β` is the
+  geometric section pitch and `Δα` is the curvature-induced angle-of-attack
+  correction.
 
 # See Also
 
@@ -60,6 +72,7 @@ Aerodynamic and performance fields evaluated at streamtube collocation points.
     a
     θ
     U_r
+    φ
     aoa
     Re
     Ma

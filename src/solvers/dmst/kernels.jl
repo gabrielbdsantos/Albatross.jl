@@ -1,14 +1,14 @@
 # Methods with explicit arguments {{{
-function _local_kinematics(a, U_in, ω, R, sinθ, cosθ, β)
+function _local_kinematics(a, U_in, ω, R, sinθ, cosθ)
     U_a = @. U_in * (1 - a)
 
     Vt = @. -(ω * R + U_a * cosθ)
     Vn = @. -U_a * sinθ
 
     U_r = @. sqrt(Vt^2 + Vn^2)
-    aoa = @. atan(Vn, -Vt) - β
+    φ = @. atan(Vn, -Vt)
 
-    return (; U_r, aoa)
+    return (; U_r, φ)
 end
 
 function _local_aerodynamics(U_r, aoa, c, ρ, μ, v_sound, model, blade_section)
@@ -19,9 +19,9 @@ function _local_aerodynamics(U_r, aoa, c, ρ, μ, v_sound, model, blade_section)
     return (; Re, Ma, Cl, Cd)
 end
 
-function _section_force_coefficients(aoa, Cl, Cd)
-    Ct = @. Cl * sin(aoa) - Cd * cos(aoa)
-    Cn = @. Cl * cos(aoa) + Cd * sin(aoa)
+function _section_force_coefficients(φ, Cl, Cd)
+    Ct = @. Cl * sin(φ) - Cd * cos(φ)
+    Cn = @. Cl * cos(φ) + Cd * sin(φ)
 
     return (; Ct, Cn)
 end
@@ -57,11 +57,21 @@ function _section_power(Q, ω, H, R, ρ, U_inf, Δθ, B)
     return (; P, Cp)
 end
 
-_apply_curvature(submodels::DMSTSubmodels, aoa, U_r, ω, R, c, section) = begin
+function _effective_aoa(submodel::DMSTSubmodels, φ, U_r, ω, R, c, section)
     m = reference_point(section)
     β = pitch(section)
-    @. aoa + aoa_correction(submodels.curvature, ω, R, m, c, β, U_r)
+    aoa_geom = φ - β
+    aoa_eff = aoa_geom + aoa_correction(submodel.curvature, ω, R, m, c, β, U_r)
+
+    return aoa_eff
 end
+
+_effective_aoa(
+    submodels::AbstractVector{<:DMSTSubmodels},
+    φ, U_r, ω, R, c,
+    sections::AbstractVector{<:AbstractBladeSection}
+) = _effective_aoa.(submodels, φ, U_r, ω, R, c, sections)
+
 # }}}
 # Context-based methods {{{
 function _local_kinematics(a, ctx::DMSTStreamtubeContext)
@@ -71,9 +81,9 @@ function _local_kinematics(a, ctx::DMSTStreamtubeContext)
     Vn = -U_a * ctx.sinθ
 
     U_r = sqrt(Vt^2 + Vn^2)
-    aoa = atan(Vn, -Vt) - pitch(ctx.section)
+    φ = atan(Vn, -Vt)
 
-    return (; U_r, aoa)
+    return (; U_r, φ)
 end
 
 function _local_aerodynamics(U_r, aoa, ctx::DMSTStreamtubeContext)
@@ -115,12 +125,15 @@ function _section_power(Q, ctx::DMSTStreamtubeContext)
     return (; P, Cp)
 end
 
-_apply_curvature(aoa, U_r, ctx::DMSTStreamtubeContext) =
-    _apply_curvature(ctx.submodels, aoa, U_r, ctx)
-
-_apply_curvature(submodels::DMSTSubmodels, aoa, U_r, ctx::DMSTStreamtubeContext) = begin
+function _effective_aoa(submodel::DMSTSubmodels, φ, U_r, ctx::DMSTStreamtubeContext)
     m = reference_point(ctx.section)
     β = pitch(ctx.section)
-    @. aoa + aoa_correction(submodels.curvature, ctx.ω, ctx.R, m, ctx.c, β, U_r)
+    aoa_geom = φ - β
+    aoa_eff = aoa_geom + aoa_correction(submodel.curvature, ctx.ω, ctx.R, m, ctx.c, β, U_r)
+
+    return aoa_eff
 end
+
+_effective_aoa(φ, U_r, ctx::DMSTStreamtubeContext) =
+    _effective_aoa(ctx.submodels, φ, U_r, ctx)
 # }}}
