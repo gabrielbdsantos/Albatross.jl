@@ -32,8 +32,8 @@ function chord end
 """
     reference_point(section::AbstractBladeSection)
 
-Return the reference point of the blade section in the local section reference
-frame.
+Return the chordwise distance from the leading edge to the section reference
+point (m).
 """
 function reference_point end
 
