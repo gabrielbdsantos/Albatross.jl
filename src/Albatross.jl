@@ -30,6 +30,7 @@ include("turbine/h_darrieus.jl")
 
 include("aerodynamics/aerodynamics.jl")
 include("aerodynamics/neuralfoil.jl")
+include("aerodynamics/gormont_berg.jl")
 
 include("grid/grid.jl")
 include("grid/azimuthal.jl")
@@ -71,6 +72,9 @@ export
     # Aerodynamics
     AbstractSectionAerodynamics,
     NeuralSectionAerodynamics,
+    GormontBergDynamicStallSectionAerodynamics,
+    advance_state!,
+    reset_state!,
 
     # Grid
     AbstractGrid,
@@ -98,6 +102,7 @@ export
     DMSTSolverOptions,
     DMSTSolveStats,
     DMSTStreamtubeFields,
-    evaluate_streamtube_fields
+    evaluate_streamtube_fields,
+    evaluate_streamtube_fields_sequential
 
 end
