@@ -6,7 +6,7 @@ using DelimitedFiles
 using NNFoil
 
 const DMST_SNAPSHOT = begin
-    data = readdlm(joinpath(DATA_DIR, "01_basic_solution.csv"))
+    data = readdlm(joinpath(DATA_DIR, "01_dmst_baseline_solution.csv"))
     @assert size(data) == (24, 3)
 
     (;
