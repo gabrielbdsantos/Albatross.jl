@@ -104,6 +104,9 @@ function solve_streamtubes_uncoupled!(
         )
 
         a[i] = current_u = clamp(stats.converged[i] ? sol.u : current_u, a_min, a_max)
+        U_r_i, φ_i = _local_kinematics(a[i], contexts[i])
+        aoa_i = _effective_aoa(contexts[i].submodels, φ_i, U_r_i, contexts[i])
+        advance_state!(contexts[i].aerodynamics, aoa_i)
     end
 
     return nothing

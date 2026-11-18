@@ -16,7 +16,20 @@ blade_section = BladeSection(
     pitch = deg2rad(0.0)
 )
 
-aerodynamics = NeuralSectionAerodynamics(; model_size = :xsmall)
+base_aerodynamics = NeuralSectionAerodynamics(; model_size = :xsmall)
+
+use_dynamic_stall = false
+
+if use_dynamic_stall
+    aerodynamics = GormontBergDynamicStallSectionAerodynamics(;
+        base = base_aerodynamics,
+        section = blade_section,
+        Re_ref = 1.6e6,
+        tc = 0.15,
+    )
+else
+    aerodynamics = base_aerodynamics
+end
 
 blade = UniformStraightBlade(
     section = blade_section,
@@ -44,4 +57,10 @@ submodels = DMSTSubmodels()
 dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options, submodels)
 
 solution = solve(dmst)
-solution_fields = evaluate_streamtube_fields(solution)
+
+# Dynamic-stall models require sequential field evaluation
+if use_dynamic_stall
+    solution_fields = evaluate_streamtube_fields_sequential(solution)
+else
+    solution_fields = evaluate_streamtube_fields(solution)
+end

@@ -41,7 +41,20 @@ blade_section = BladeSection(
     pitch = deg2rad(-2.0)
 )
 
-aerodynamics = NeuralSectionAerodynamics(; model_size = :xsmall)
+base_aerodynamics = NeuralSectionAerodynamics(; model_size = :xsmall)
+
+use_dynamic_stall = false
+
+if use_dynamic_stall
+    aerodynamics = GormontBergDynamicStallSectionAerodynamics(;
+        base = base_aerodynamics,
+        section = blade_section,
+        Re_ref = 6.35e6,
+        tc = 0.21,
+    )
+else
+    aerodynamics = base_aerodynamics
+end
 
 blade = UniformStraightBlade(
     section = blade_section,
@@ -71,7 +84,11 @@ for omega in omegas
     solidity = turbine.num_blades * blade_section.chord / blade_section.radial_position
     dmst = DMST(turbine, environment, momentum, aerodynamics, grid, options, submodels)
     solution = solve(dmst)
-    solution_fields = evaluate_streamtube_fields(solution)
+    if use_dynamic_stall
+        solution_fields = evaluate_streamtube_fields_sequential(solution)
+    else
+        solution_fields = evaluate_streamtube_fields(solution)
+    end
 
     append!(tsr, current_tsr)
     append!(cp, sum(solution_fields.Cp))

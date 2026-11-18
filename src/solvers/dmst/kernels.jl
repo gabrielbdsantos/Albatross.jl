@@ -89,7 +89,10 @@ end
 function _local_aerodynamics(U_r, aoa, ctx::DMSTStreamtubeContext)
     Re = ctx.ρ * U_r * ctx.c / ctx.μ
     Ma = U_r / ctx.v_sound
-    Cl, Cd = aerodynamic_coefficients(ctx.aerodynamics, ctx.section, rad2deg(aoa), Re)
+    dt = ctx.Δθ / ctx.ω
+    Cl, Cd = aerodynamic_coefficients(
+        ctx.aerodynamics, ctx.section, rad2deg(aoa), Re; U_r, c = ctx.c, dt
+    )
 
     return (; Re, Ma, Cl, Cd)
 end
