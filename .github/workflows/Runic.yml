@@ -1,5 +1,4 @@
----
-name: Check
+name: Runic formatting
 on:
   push:
     branches:
@@ -9,7 +8,7 @@ on:
   pull_request:
 jobs:
   runic:
-    name: Runic formatting
+    name: Runic
     runs-on: ubuntu-latest
     # Permissions needed for reviewdog/action-suggester to post comments
     permissions:
@@ -19,9 +18,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v7
-      # - uses: julia-actions/setup-julia@v2
-      #   with:
-      #     version: '1.11'
+      - uses: julia-actions/setup-julia@v3
       - uses: julia-actions/cache@v3
       - uses: fredrikekre/runic-action@v1
         with:
